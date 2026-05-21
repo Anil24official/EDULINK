@@ -1,0 +1,48 @@
+/* ═══════════ DASHBOARD SHELL ═══════════ */
+.dash-shell {
+  display: flex;
+  min-height: 100vh;
+}
+.dash-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: #f5f7fa;
+  min-width: 0;
+}
+.dash-content {
+  flex: 1;
+  padding: 1.5rem 2rem;
+  overflow-y: auto;
+}
+
+/* Overlay for mobile sidebar */
+.dash-overlay {
+  display: none;
+}
+
+/* ═══════════ RESPONSIVE ═══════════ */
+@media (max-width: 1024px) {
+  .dash-content {
+    padding: 1rem;
+  }
+  .dash-overlay {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.4);
+    z-index: 90;
+    animation: fadeIn 0.2s ease;
+  }
+}
+@media (max-width: 640px) {
+  .dash-content {
+    padding: 0.75rem;
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
