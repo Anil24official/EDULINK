@@ -7,13 +7,6 @@ import { parseApiError } from "../../utils/apiErrorParser";
 import { formatDateTime } from "../../utils/dateFormatters";
 import "../../styles/pages.css";
 
-/**
- * Student-side assignment submission.
- *  - Course dropdown — populated from /student/courses (enrolled courses only)
- *  - Assignment dropdown — populated from /student/assignments/{courseCode} for the chosen course
- *  - assignmentNum + assignmentTitle auto-fill from the selected assignment
- *  - Submission content (text) and / or attachment file
- */
 export default function SubmitAssignmentPage() {
   // Course dropdown (cascades from enrolled courses)
   const [courses, setCourses] = useState([]);
@@ -201,7 +194,7 @@ export default function SubmitAssignmentPage() {
           )}
 
           <div className="form-group">
-            <label htmlFor="sub-content">Submission Text</label>
+            <label htmlFor="sub-content">Submission Text <span style={{ color: "red" }}>*</span></label>
             <textarea
               id="sub-content"
               rows={5}

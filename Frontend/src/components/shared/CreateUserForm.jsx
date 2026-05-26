@@ -5,20 +5,7 @@ import { required, email as emailValidator, validateForm, hasErrors } from "../.
 import "../../styles/pages.css";
 
 
-/**
- * Reusable form for creating users (compliance officer, board officer, regulator, school admin, teacher, student).
- * Props:
- *   - title: form heading
- *   - fields: [{ name, label, type, placeholder, required }]
- *   - onSubmit: async (formData) => response
- *   - successExtractor: (response) => { message, tempPassword }
- *
- * Validation:
- *   - All fields are required by default; pass `required: false` on a field to make it optional.
- *   - Fields with type="email" must also pass an email format check.
- *   - Validation runs on submit and renders inline error messages beneath each invalid field.
- */
-export default function CreateUserForm({ title, fields, onSubmit,validate, successExtractor, defaultValues }) {
+export default function CreateUserForm({ title, fields, onSubmit, successExtractor, defaultValues }) {
   const [formData, setFormData] = useState(defaultValues || {});
   const [fieldErrors, setFieldErrors] = useState({});
   const [loading, setLoading] = useState(false);
@@ -68,13 +55,6 @@ export default function CreateUserForm({ title, fields, onSubmit,validate, succe
     }
     setFieldErrors({});
     setLoading(true);
-    
-    
-    if (validate && !validate(formData)) {
-      setLoading(false); 
-      return;
-    }
-
 
     try {
       /* Clean payload: convert numeric fields, strip empty optional values */

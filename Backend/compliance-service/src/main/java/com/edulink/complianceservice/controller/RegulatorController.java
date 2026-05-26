@@ -1,8 +1,8 @@
 package com.edulink.complianceservice.controller;
 import com.edulink.complianceservice.dto.ApiResponse;
 import com.edulink.complianceservice.dto.RegulatorDto;
+import com.edulink.complianceservice.dto.RuleDto;
 import com.edulink.complianceservice.entity.Regulator;
-import com.edulink.complianceservice.entity.Rule;
 import com.edulink.complianceservice.service.ComplianceService;
 import com.edulink.complianceservice.service.RegulatorService;
 import com.edulink.complianceservice.utils.JwtUtil;
@@ -45,24 +45,25 @@ public class RegulatorController {
   //  ---------------------------------Something new --------------------------------------
 
     @GetMapping("/getRules")
-    public ResponseEntity<List<Rule>> getRules(){
-        return ResponseEntity.ok(regulatorService.getRules());
+    public ResponseEntity<List<RuleDto>> getRules(){
+        return ResponseEntity.ok(RuleDto.fromEntities(regulatorService.getRules()));
     }
 
     @GetMapping("/getActiveRules")
-    public ResponseEntity<List<Rule>> getActiveRules(){
-        return ResponseEntity.ok(regulatorService.getActiveRules());
+    public ResponseEntity<List<RuleDto>> getActiveRules(){
+        return ResponseEntity.ok(RuleDto.fromEntities(regulatorService.getActiveRules()));
     }
 
     @GetMapping("/getRegulator")
-    public ResponseEntity<List<Regulator>> getRegulator(){
-        return ResponseEntity.ok(regulatorService.getRegulator());
+    public ResponseEntity<List<RegulatorDto>> getRegulator(){
+        return ResponseEntity.ok(RegulatorDto.fromEntities(regulatorService.getRegulator()));
     }
 
     @PreAuthorize("hasRole('REGULATOR')")
     @PostMapping("/markRules")
-    public ResponseEntity<Regulator> markRules(@RequestBody @Valid RegulatorDto regulatorDto){
-        return ResponseEntity.ok(regulatorService.createRegulator(regulatorDto));
+    public ResponseEntity<RegulatorDto> markRules(@RequestBody @Valid RegulatorDto regulatorDto){
+        Regulator saved = regulatorService.createRegulator(regulatorDto);
+        return ResponseEntity.ok(RegulatorDto.fromEntity(saved));
     }
 
 }

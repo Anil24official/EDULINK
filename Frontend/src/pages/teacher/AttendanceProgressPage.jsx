@@ -95,7 +95,6 @@ export default function AttendanceProgressPage() {
     const recs    = rangedRecords.filter((r) => r.rollNumber === s.rollNumber);
     const total   = recs.length;
     const present = recs.filter((r) => r.status === "PRESENT").length;
-    const od      = recs.filter((r) => r.status === "OD").length;
     const absent  = recs.filter((r) => r.status === "ABSENT").length;
     const pct     = total > 0 ? ((present + od) / total) * 100 : 0;
     return { ...s, total, present, od, absent, pct };
@@ -242,7 +241,6 @@ export default function AttendanceProgressPage() {
                 <th>Roll No.</th>
                 <th>Present</th>
                 <th>Absent</th>
-                <th>OD</th>
                 <th>Total</th>
                 <th>Progress</th>
               </tr>
@@ -263,7 +261,6 @@ export default function AttendanceProgressPage() {
                   <td className="att-cell-roll">{s.rollNumber || "—"}</td>
                   <td><span className="att-chip att-chip--present">{s.present}</span></td>
                   <td><span className="att-chip att-chip--absent">{s.absent}</span></td>
-                  <td><span className="att-chip att-chip--od">{s.od}</span></td>
                   <td>{s.total}</td>
                   <td style={{ minWidth: 200 }}><AnimatedBar percent={s.pct} /></td>
                 </tr>

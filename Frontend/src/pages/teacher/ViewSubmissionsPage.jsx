@@ -5,6 +5,7 @@ import examApi from "../../api/examApi";
 import SectionHeader from "../../components/shared/SectionHeader";
 import Spinner from "../../components/shared/Spinner";
 import AlertBanner from "../../components/shared/AlertBanner";
+import notify from "../../utils/notify";
 import { parseApiError } from "../../utils/apiErrorParser";
 import "../../styles/pages.css";
 
@@ -51,7 +52,7 @@ export default function ViewSubmissionsPage() {
       link.remove();
       window.URL.revokeObjectURL(url);
     } catch (err) {
-      alert("Download failed: " + parseApiError(err));
+      notify.error("Download failed: " + parseApiError(err));
     }
   };
 

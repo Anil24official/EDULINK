@@ -1,6 +1,7 @@
 package com.edulink.complianceservice.controller;
 
 import com.edulink.complianceservice.dto.ReportDto;
+import com.edulink.complianceservice.dto.RuleDto;
 import com.edulink.complianceservice.dto.SchoolDto;
 import com.edulink.complianceservice.dto.UserDto;
 
@@ -70,21 +71,21 @@ public class ComplianceController {
 
 
     @GetMapping("/allRules")
-    public ResponseEntity<List<Rule>> allRules(){
-        return ResponseEntity.ok(complianceService.getRules());
+    public ResponseEntity<List<RuleDto>> allRules(){
+        return ResponseEntity.ok(RuleDto.fromEntities(complianceService.getRules()));
     }
 
     @GetMapping("/allReviewRules")
-    public ResponseEntity<List<Rule>> allReviewRules(){
-        return ResponseEntity.ok(complianceService.getRules());
+    public ResponseEntity<List<RuleDto>> allReviewRules(){
+        return ResponseEntity.ok(RuleDto.fromEntities(complianceService.getRules()));
     }
 
 
     @PreAuthorize("hasRole('COMPLIANCE_OFFICER')")
     @PutMapping("/rule-validate/{ruleId}/{status}")
-    public ResponseEntity<Rule> validateRule(@PathVariable Long ruleId,@PathVariable String status){
-       return ResponseEntity.ok(complianceService.validateRule(ruleId,status));
-
+    public ResponseEntity<RuleDto> validateRule(@PathVariable Long ruleId,@PathVariable String status){
+       Rule saved = complianceService.validateRule(ruleId, status);
+       return ResponseEntity.ok(RuleDto.fromEntity(saved));
     }
 
 

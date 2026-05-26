@@ -1,5 +1,6 @@
 package com.edulink.attendanceservice.controller;
 import com.edulink.attendanceservice.dto.ApiResponse;
+import com.edulink.attendanceservice.dto.AttendanceDto;
 import com.edulink.attendanceservice.entity.Attendance;
 import com.edulink.attendanceservice.service.AttendanceService;
 import jakarta.validation.Valid;
@@ -9,6 +10,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 public class AttendanceController {
@@ -18,72 +20,60 @@ public class AttendanceController {
         this.attendanceService = attendanceService;
     }
 
-    /**
-     * Mark attendance for a single student.
-     * POST /teacher/mark-attendance
-     */
     @PostMapping("/teacher/mark-attendance")
     @PreAuthorize("hasRole('TEACHER')")
-    public ResponseEntity<ApiResponse<Attendance>> markAttendance(@Valid @RequestBody Attendance attendance) {
+    public ResponseEntity<ApiResponse<AttendanceDto>> markAttendance(@Valid @RequestBody AttendanceDto request) {
         String teacherEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        Attendance attendance = request.toEntity();
         attendance.setMarkedBy(teacherEmail);
+        Attendance saved = attendanceService.markAttendance(attendance);
         return ResponseEntity.status(HttpStatus.CREATED)
-            .body(ApiResponse.success("Attendance marked", attendanceService.markAttendance(attendance)));
+            .body(ApiResponse.success("Attendance marked", AttendanceDto.fromEntity(saved)));
     }
 
-    /**
-     * Bulk mark attendance for all students in a class.
-     * POST /teacher/mark-attendance/bulk
-     * Body: array of Attendance objects
-     */
     @PostMapping("/teacher/mark-attendance/bulk")
     @PreAuthorize("hasRole('TEACHER')")
-    public ResponseEntity<ApiResponse<List<Attendance>>> markAttendanceBulk(
-            @RequestBody List<Attendance> records) {
+    public ResponseEntity<ApiResponse<List<AttendanceDto>>> markAttendanceBulk(
+            @RequestBody List<AttendanceDto> records) {
         String teacherEmail = SecurityContextHolder.getContext().getAuthentication().getName();
-        records.forEach(a -> a.setMarkedBy(teacherEmail));
-        List<Attendance> saved = attendanceService.markAttendanceBulk(records);
+        List<Attendance> toSave = records.stream()
+                .map(AttendanceDto::toEntity)
+                .peek(a -> a.setMarkedBy(teacherEmail))
+                .collect(Collectors.toList());
+        List<Attendance> saved = attendanceService.markAttendanceBulk(toSave);
         return ResponseEntity.status(HttpStatus.CREATED)
-            .body(ApiResponse.success("Bulk attendance marked for " + saved.size() + " students", saved));
+            .body(ApiResponse.success("Bulk attendance marked for " + saved.size() + " students",
+                    AttendanceDto.fromEntities(saved)));
     }
 
-    /**
-     * Get attendance records for a student.
-     * GET /student/attendance
-     */
     @GetMapping("/student/attendance")
     @PreAuthorize("hasRole('STUDENT')")
-    public ResponseEntity<ApiResponse<List<Attendance>>> getStudentAttendance(
+    public ResponseEntity<ApiResponse<List<AttendanceDto>>> getStudentAttendance(
             @RequestParam(required = false) String rollNumber) {
+        List<Attendance> rows;
         if (rollNumber == null || rollNumber.isBlank()) {
             Object details = SecurityContextHolder.getContext().getAuthentication().getDetails();
             if (details instanceof String && !((String) details).contains("@")) {
                 rollNumber = (String) details;
+                rows = attendanceService.getAttendanceByRollNumber(rollNumber);
             } else {
-                return ResponseEntity.ok(ApiResponse.success("Attendance retrieved",
-                        attendanceService.getAttendanceByEmail(
-                                SecurityContextHolder.getContext().getAuthentication().getName())));
+                rows = attendanceService.getAttendanceByEmail(
+                        SecurityContextHolder.getContext().getAuthentication().getName());
             }
+        } else {
+            rows = attendanceService.getAttendanceByRollNumber(rollNumber);
         }
         return ResponseEntity.ok(ApiResponse.success("Attendance retrieved",
-                attendanceService.getAttendanceByRollNumber(rollNumber)));
+                AttendanceDto.fromEntities(rows)));
     }
 
-    /**
-     * Get attendance report for admin/teacher by schoolId.
-     * GET /admin/attendance-report?schoolId=SCH001
-     */
     @GetMapping("/admin/attendance-report")
     @PreAuthorize("hasRole('SCHOOL_ADMIN') or hasRole('TEACHER') or hasRole('EDUCATION_BOARD_OFFICER')")
-    public ResponseEntity<ApiResponse<List<Attendance>>> getAttendanceReport(@RequestParam String schoolId) {
+    public ResponseEntity<ApiResponse<List<AttendanceDto>>> getAttendanceReport(@RequestParam String schoolId) {
         return ResponseEntity.ok(ApiResponse.success("Attendance report",
-                attendanceService.getAttendanceReport(schoolId)));
+                AttendanceDto.fromEntities(attendanceService.getAttendanceReport(schoolId))));
     }
 
-    /**
-     * Get attendance statistics for a course (for progress monitoring).
-     * GET /teacher/attendance-progress?courseId=5
-     */
     @GetMapping("/teacher/attendance-progress")
     @PreAuthorize("hasRole('TEACHER')")
     public ResponseEntity<ApiResponse<List<Map<String, Object>>>> getAttendanceProgress(
@@ -92,10 +82,6 @@ public class AttendanceController {
                 attendanceService.getProgressByCourse(courseId)));
     }
 
-    /**
-     * Get students with low attendance in a course (< 50%).
-     * GET /teacher/low-attendance?courseId=5
-     */
     @GetMapping("/teacher/low-attendance")
     @PreAuthorize("hasRole('TEACHER')")
     public ResponseEntity<ApiResponse<List<Map<String, Object>>>> getLowAttendance(

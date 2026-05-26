@@ -1,6 +1,10 @@
 package com.edulink.courseservice.dto;
 
+import com.edulink.courseservice.entity.LearningMaterial;
+
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class LearningMaterialDto {
     private String courseCode;
@@ -51,4 +55,17 @@ public class LearningMaterialDto {
     public void setMaterialType(String materialType) { this.materialType = materialType; }
     public LocalDateTime getUploadedAt() { return uploadedAt; }
     public void setUploadedAt(LocalDateTime uploadedAt) { this.uploadedAt = uploadedAt; }
+
+    public static LearningMaterialDto fromEntity(LearningMaterial m) {
+        if (m == null) return null;
+        return new LearningMaterialDto(
+                m.getCourseCode(), m.getTeacherEmail(), m.getTitle(), m.getDescription(),
+                m.getFileId(), m.getFileName(), m.getFileSize(), m.getContentType(),
+                m.getMaterialType(), m.getUploadedAt());
+    }
+
+    public static List<LearningMaterialDto> fromEntities(List<LearningMaterial> entities) {
+        if (entities == null) return List.of();
+        return entities.stream().map(LearningMaterialDto::fromEntity).collect(Collectors.toList());
+    }
 }

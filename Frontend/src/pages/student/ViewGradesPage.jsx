@@ -88,11 +88,6 @@ export default function ViewGradesPage() {
     },
     { key: "courseCode", label: "Course" },
     {
-      key: "title",
-      label: "Title",
-      render: (r) => r.title || "—",
-    },
-    {
       key: "marks",
       label: "Marks",
       render: (r) =>

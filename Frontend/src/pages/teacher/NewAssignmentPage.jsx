@@ -97,14 +97,14 @@ export default function NewAssignmentPage() {
         <AlertBanner type="success" message={success} onClose={() => setSuccess("")} />
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label>Class</label>
+            <label>Class <span style={{ color: "red" }}>*</span></label>
             <select
               value={selectedClassId}
               onChange={(e) => setSelectedClassId(e.target.value)}
               disabled={loading}
               required
             >
-              <option value="">— Select a class —</option>
+              <option value="">— Select a class — <span style={{ color: "red" }}>*</span></option>
               {classes.map((c) => (
                 <option key={c.id || c.classId} value={c.id || c.classId}>
                   {c.className || `Class ${c.grade || ""}${c.section || ""}`}
@@ -119,7 +119,7 @@ export default function NewAssignmentPage() {
           </div>
 
           <div className="form-group">
-            <label>Course</label>
+            <label>Course <span style={{ color: "red" }}>*</span></label>
             <select
               value={selectedCourseCode}
               onChange={(e) => setSelectedCourseCode(e.target.value)}
@@ -147,7 +147,7 @@ export default function NewAssignmentPage() {
           </div>
 
           <div className="form-group">
-            <label>Title</label>
+            <label>Title <span style={{ color: "red" }}>*</span></label>
             <input value={title} onChange={(e) => setTitle(e.target.value)} required disabled={loading} />
           </div>
           <div className="form-group">
@@ -155,11 +155,11 @@ export default function NewAssignmentPage() {
             <textarea rows={3} value={description} onChange={(e) => setDescription(e.target.value)} disabled={loading} />
           </div>
           <div className="form-group">
-            <label>Due Date</label>
+            <label>Due Date <span style={{ color: "red" }}>*</span></label>
             <input type="date" value={dueDate} onChange={(e) => setDueDate(e.target.value)} disabled={loading} />
           </div>
           <div className="form-group">
-            <label>Max Marks</label>
+            <label>Max Marks <span style={{ color: "red" }}>*</span></label>
             <input type="number" value={maxMarks} onChange={(e) => setMaxMarks(e.target.value)} disabled={loading} />
           </div>
           <div className="form-group">

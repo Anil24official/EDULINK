@@ -4,7 +4,7 @@ import SectionHeader from "../../components/shared/SectionHeader";
 import AlertBanner from "../../components/shared/AlertBanner";
 import { parseApiError } from "../../utils/apiErrorParser";
 import axios from "axios";
-const BASE = process.env.REACT_APP_GATEWAY_URL ;
+const BASE = process.env.REACT_APP_GATEWAY_URL || "http://localhost:9090";
 
 export default function RegisterSchoolPage() {
   const key=localStorage.getItem("edu_access_token");
@@ -32,7 +32,7 @@ export default function RegisterSchoolPage() {
     try {
       // const res = await identityApi.createSchool(form);
 
-      const res = await axios.post(`${BASE}/compliance-service/compliance/create-school`,form,{
+      const res = await axios.post(`${BASE}/compliance/create-school`,form,{
                           headers:{
                             Authorization: `Bearer ${key}`
                           }
@@ -128,7 +128,6 @@ export default function RegisterSchoolPage() {
                   type="tel"
                   id="phone"
                   name="phone"
-                  pattern="[0-9]{10}"
                   value={form.phone}
                   onChange={handleChange}
                   required

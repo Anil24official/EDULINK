@@ -1,9 +1,9 @@
 const BASE = process.env.REACT_APP_GATEWAY_URL || "http://localhost:9090";;
 
 const Endpoints = {
-  /* ═══════════════════════════════════════════════
-   *  IDENTITY SERVICE  (Port 8081 behind gateway)
-   * ═══════════════════════════════════════════════ */
+
+  /*  IDENTITY SERVICE  (Port 8081 behind gateway)*/
+
   identity: {
     // Auth (public)
     login:                          `${BASE}/auth/login`,
@@ -35,6 +35,9 @@ const Endpoints = {
 
     // Teacher endpoints
     studentsByClass:                `${BASE}/teacher/students-by-class`,
+
+    // Operator: Audit Logs (PDF 4.1)
+    auditLogs:                      `${BASE}/operator/audit-logs`,
   },
 
   /* ═══════════════════════════════════════════════
@@ -65,6 +68,15 @@ const Endpoints = {
     attendance:                     `${BASE}/student/attendance`,
     // ...existing code...
     myAssignmentGrades:             `${BASE}/student/my-grades/assignments`,
+
+    // Student Documents (PDF 4.2)
+    documents:                      `${BASE}/student/documents`,
+    uploadDocument:                 `${BASE}/student/documents/upload`,
+    documentById:        (id) =>    `${BASE}/student/documents/${id}`,
+    downloadDocument:    (id) =>    `${BASE}/student/documents/${id}/download`,
+
+    // Performance Metrics — student view (PDF 4.6)
+    performanceMetrics:             `${BASE}/student/performance-metrics`,
   },
 
   /* ═══════════════════════════════════════════════
@@ -139,6 +151,20 @@ const Endpoints = {
     teacherClassAttendance:         `${BASE}/teacher/attendance`,
     studentAttendance:              `${BASE}/student/attendance`,
     adminReport:                    `${BASE}/admin/attendance-report`,
+
+    // Performance Metrics (PDF 4.6)
+    teacherMetrics:                 `${BASE}/teacher/performance-metrics`,
+    teacherMetricById:    (id) =>   `${BASE}/teacher/performance-metrics/${id}`,
+    adminMetrics:                   `${BASE}/admin/performance-metrics`,
+    studentMetrics:                 `${BASE}/student/performance-metrics`,
+  },
+
+  /* ═══════════════════════════════════════════════
+   *  STUDENT DOCUMENTS (admin view) — student-service
+   * ═══════════════════════════════════════════════ */
+  documents: {
+    adminList:                      `${BASE}/admin/documents`,
+    adminVerify:         (id) =>    `${BASE}/admin/documents/${id}/verify`,
   },
 
   /* ═══════════════════════════════════════════════
@@ -150,6 +176,29 @@ const Endpoints = {
     complianceStatus:               `${BASE}/compliance/compliance-status`,
     registerSchool:                 `${BASE}/compliance/register-school`,
     auditRecords:                   `${BASE}/compliance/audit-records`,
+
+    // Rules (live + review)
+    allRules:                       `${BASE}/compliance/allRules`,
+    allReviewRules:                 `${BASE}/compliance/allReviewRules`,
+    validateRule:    (id, status) => `${BASE}/compliance/rule-validate/${id}/${status}`,
+
+    // Compliance Records (PDF 4.7 — ComplianceRecord)
+    records:                        `${BASE}/compliance/records`,
+    recordById:          (id) =>    `${BASE}/compliance/records/${id}`,
+
+    // Audits (PDF 4.7 — Audit)
+    audits:                         `${BASE}/compliance/audits`,
+    auditById:           (id) =>    `${BASE}/compliance/audits/${id}`,
+    auditStatus:    (id, status) => `${BASE}/compliance/audits/${id}/status/${status}`,
+
+    // Reports (PDF 4.8 — persisted analytics reports)
+    reportsStore:                   `${BASE}/compliance/reports-store`,
+    reportById:          (id) =>    `${BASE}/compliance/reports-store/${id}`,
+    reportGenerate:                 `${BASE}/compliance/reports-store/generate`,
+
+    // KPIs (PDF 8 — Observability)
+    complianceKpis:                 `${BASE}/compliance/kpis`,
+    aggregatedKpis:                 `${BASE}/admin/kpis`,
 
     // Board Officer
     boardSchools:                   `${BASE}/board/schools`,

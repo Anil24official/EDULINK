@@ -64,34 +64,12 @@ export default function StatusCard({ props: datas }) {
             </div>
 
             <style>{`
-                @keyframes fadeDown {
-                    from {
-                        opacity: 0;
-                        transform: translateY(-20px);
-                    }
-                    to {
-                        opacity: 1;
-                        transform: translateY(0);
-                    }
-                }
-
                 @keyframes fadeUp {
-                    from {
-                        opacity: 0;
-                        transform: translateY(20px);
-                    }
-                    to {
-                        opacity: 1;
-                        transform: translateY(0);
-                    }
+                    from { opacity: 0; transform: translateY(20px); }
+                    to { opacity: 1; transform: translateY(0); }
                 }
-
-                .animate-fadeDown {
-                    animation: fadeDown 0.6s ease-out;
-                }
-
                 .animate-fadeUp {
-                    animation: fadeUp 0.6s ease-out forwards;
+                    animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) fill-mode: forwards;
                     opacity: 0;
                 }
             `}</style>

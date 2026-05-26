@@ -107,7 +107,7 @@ export default function NewExamPage() {
         <AlertBanner type="success" message={success} onClose={() => setSuccess("")} />
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label>Class</label>
+            <label>Class <span style={{ color: "red" }}>*</span></label>
             <select
               value={selectedClassId}
               onChange={(e) => setSelectedClassId(e.target.value)}
@@ -129,7 +129,7 @@ export default function NewExamPage() {
           </div>
 
           <div className="form-group">
-            <label>Course</label>
+            <label>Course <span style={{ color: "red" }}>*</span></label>
             <select
               value={selectedCourseCode}
               onChange={(e) => setSelectedCourseCode(e.target.value)}
@@ -154,11 +154,11 @@ export default function NewExamPage() {
           </div>
 
           <div className="form-group">
-            <label>Exam Title</label>
+            <label>Exam Title <span style={{ color: "red" }}>*</span></label>
             <input value={examTitle} onChange={(e) => setExamTitle(e.target.value)} required disabled={loading} />
           </div>
           <div className="form-group">
-            <label>Exam Type</label>
+            <label>Exam Type <span style={{ color: "red" }}>*</span></label>
             <select value={examType} onChange={(e) => setExamType(e.target.value)} disabled={loading}>
               <option value="MIDTERM">Midterm</option>
               <option value="FINAL">Final</option>
@@ -167,19 +167,19 @@ export default function NewExamPage() {
             </select>
           </div>
           <div className="form-group">
-            <label>Total Marks</label>
+            <label>Total Marks <span style={{ color: "red" }}>*</span></label>
             <input type="number" value={totalMarks} onChange={(e) => setTotalMarks(e.target.value)} required disabled={loading} />
           </div>
           <div className="form-group">
-            <label>Passing Marks</label>
+            <label>Passing Marks <span style={{ color: "red" }}>*</span></label>
             <input type="number" value={passingMarks} onChange={(e) => setPassingMarks(e.target.value)} required disabled={loading} />
           </div>
           <div className="form-group">
-            <label>Exam Date</label>
+            <label>Exam Date <span style={{ color: "red" }}>*</span></label>
             <input type="date" value={examDate} onChange={(e) => setExamDate(e.target.value)} disabled={loading} />
           </div>
           <div className="form-group">
-            <label>Duration (minutes)</label>
+            <label>Duration (minutes) <span style={{ color: "red" }}>*</span></label>
             <input
               type="number"
               min="1"
@@ -194,7 +194,7 @@ export default function NewExamPage() {
             </small>
           </div>
           <div className="form-group">
-            <label>Questions File</label>
+            <label>Questions File <span style={{ color: "red" }}>*</span></label>
             <input id="exam-questions-file" type="file" onChange={(e) => setFile(e.target.files[0])} disabled={loading} />
           </div>
           <button type="submit" className="submit-btn" disabled={loading}>{loading ? "Creating…" : "Create Exam"}</button>

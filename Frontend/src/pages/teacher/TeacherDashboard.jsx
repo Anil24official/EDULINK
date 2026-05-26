@@ -10,6 +10,7 @@ import "../../styles/pages.css";
 
 export default function TeacherDashboard() {
   const [classes, setClasses] = useState([]);
+  const [totalStudents, setTotalStudents] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -27,7 +28,25 @@ export default function TeacherDashboard() {
       })
       .finally(() => setLoading(false));
   }, []);
-
+useEffect(() => {
+    if (classes.length === 0) {
+      setTotalStudents(0);
+      return;
+    }
+    Promise.allSettled(
+      classes.map((c) => courseApi.fetchClassStudents(c.id || c.classId))
+    ).then((results) => {
+      const seen = new Set();
+      results.forEach((r) => {
+        if (r.status !== "fulfilled") return;
+        const list = r.value.data?.data || r.value.data || [];
+        if (Array.isArray(list)) {
+          list.forEach((s) => seen.add(s.email || s.rollNumber || s.id));
+        }
+      });
+      setTotalStudents(seen.size);
+    });
+  }, [classes]);
   if (loading) return <Spinner />;
 
   const recentClasses = classes.slice(0, 5);
@@ -43,8 +62,8 @@ export default function TeacherDashboard() {
 
       <div className="metrics-grid">
         <MetricCard icon="class" label="My Classes" value={classes.length} color="#1a73e8" />
-        <MetricCard icon="schedule" label="Recent Classes" value={recentClasses.length} color="#6a1b9a" />
-        <MetricCard icon="people" label="Students" value={classes.reduce((acc, c) => acc + (c.studentCount || 0), 0)} color="#2e7d32" />
+{/*         <MetricCard icon="schedule" label="Recent Classes" value={recentClasses.length} color="#6a1b9a" /> */}
+        <MetricCard icon="people" label="Students" value={totalStudents} color="#2e7d32" />
       </div>
 
       <div className="dashboard-main-grid">

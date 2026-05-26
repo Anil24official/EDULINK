@@ -207,7 +207,7 @@ export default function UploadMaterialPage() {
         <AlertBanner type="success" message={success} onClose={() => setSuccess("")} />
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label>Class</label>
+            <label>Class <span style={{ color: "red" }}>*</span></label>
             <select
               value={selectedClassId}
               onChange={(e) => setSelectedClassId(e.target.value)}
@@ -229,7 +229,7 @@ export default function UploadMaterialPage() {
           </div>
 
           <div className="form-group">
-            <label>Course</label>
+            <label>Course <span style={{ color: "red" }}>*</span></label>
             <select
               value={selectedCourseCode}
               onChange={(e) => setSelectedCourseCode(e.target.value)}
@@ -254,7 +254,7 @@ export default function UploadMaterialPage() {
           </div>
 
           <div className="form-group">
-            <label>Title</label>
+            <label>Title  <span style={{ color: "red" }}>*</span></label>
             <input value={title} onChange={(e) => setTitle(e.target.value)} required disabled={loading} placeholder="Chapter 1 Notes" />
           </div>
           <div className="form-group">
@@ -262,16 +262,14 @@ export default function UploadMaterialPage() {
             <textarea rows={3} value={description} onChange={(e) => setDescription(e.target.value)} disabled={loading} />
           </div>
           <div className="form-group">
-            <label>Material Type</label>
+            <label>Material Type <span style={{ color: "red" }}>*</span></label>
             <select value={materialType} onChange={(e) => setMaterialType(e.target.value)} disabled={loading}>
               <option value="PDF">PDF</option>
-              <option value="DOCUMENT">Document</option>
-              <option value="VIDEO">Video</option>
               <option value="TEXT">Text</option>
             </select>
           </div>
           <div className="form-group">
-            <label>File</label>
+            <label>File <span style={{ color: "red" }}>*</span></label>
             <input id="material-file" type="file" onChange={(e) => setFile(e.target.files[0])} disabled={loading} accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt" />
           </div>
           <button type="submit" className="submit-btn" disabled={loading}>{loading ? "Uploading…" : "Upload Material"}</button>

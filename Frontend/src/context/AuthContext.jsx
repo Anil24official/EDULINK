@@ -60,17 +60,20 @@ export function AuthProvider({ children }) {
     const user = {
       ...claims,
       fullName: serverUser.fullName || serverUser.name || claims.fullName,
-      schoolId: serverUser.schoolId,
+      schoolId: serverUser.schoolId || claims.schoolId || null,
+      userId: serverUser.userId || claims.userId || null,
     };
 
     storeUser(user);
     setCurrentUser(user);
     setAuthenticated(true);
 
-    // Always allow login, do not force password change
-    setMustChangePassword(false);
-    const destination = getDashboardPath(user.role);
-    return { user, forceChange: false, destination };
+    const forceChange = Boolean(serverUser.mustChangePassword);
+    setMustChangePassword(forceChange);
+    const destination = forceChange
+      ? "/change-password"
+      : getDashboardPath(user.role);
+    return { user, forceChange, destination };
   };
 
   const signOut = () => {

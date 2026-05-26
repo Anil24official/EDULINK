@@ -33,16 +33,18 @@ public class TeacherController {
     }
 
     @GetMapping("/classes")
-    public ResponseEntity<ApiResponse<List<ClassRoom>>> getClasses(Authentication auth) {
+    public ResponseEntity<ApiResponse<List<ClassRoomDto>>> getClasses(Authentication auth) {
         String email = auth.getName();
         List<ClassRoom> classes = courseService.getClassesByTeacher(email);
-        return ResponseEntity.ok(ApiResponse.success("Classes retrieved", classes));
+        return ResponseEntity.ok(ApiResponse.success("Classes retrieved",
+                ClassRoomDto.fromEntities(classes)));
     }
 
     /** Courses offered in a specific class — drives the cascading dropdown on assignment/exam creation. */
     @GetMapping("/courses-by-class/{classId}")
-    public ResponseEntity<ApiResponse<List<Course>>> getCoursesByClass(@PathVariable Long classId) {
-        return ResponseEntity.ok(ApiResponse.success("Courses retrieved", courseService.getCoursesByClassId(classId)));
+    public ResponseEntity<ApiResponse<List<CourseDto>>> getCoursesByClass(@PathVariable Long classId) {
+        return ResponseEntity.ok(ApiResponse.success("Courses retrieved",
+                CourseDto.fromEntities(courseService.getCoursesByClassId(classId))));
     }
 
     @PostMapping("/upload-material")
@@ -76,16 +78,9 @@ public class TeacherController {
             // Save metadata to MySQL
             LearningMaterial saved = courseService.uploadMaterial(material);
 
-            // Convert to DTO
-            LearningMaterialDto dto = new LearningMaterialDto(
-                    saved.getCourseCode(), saved.getTeacherEmail(), saved.getTitle(),
-                    saved.getDescription(), saved.getFileId(), saved.getFileName(),
-                    saved.getFileSize(), saved.getContentType(), saved.getMaterialType(),
-                    saved.getUploadedAt()
-            );
-
             return ResponseEntity.status(HttpStatus.CREATED)
-                    .body(ApiResponse.success("Learning material uploaded successfully", dto));
+                    .body(ApiResponse.success("Learning material uploaded successfully",
+                            LearningMaterialDto.fromEntity(saved)));
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(ApiResponse.error("Failed to upload file: " + e.getMessage()));
@@ -93,9 +88,10 @@ public class TeacherController {
     }
 
     @GetMapping("/materials/{courseCode}")
-    public ResponseEntity<ApiResponse<List<LearningMaterial>>> getCourseMaterials(@PathVariable String courseCode) {
+    public ResponseEntity<ApiResponse<List<LearningMaterialDto>>> getCourseMaterials(@PathVariable String courseCode) {
         List<LearningMaterial> materials = courseService.getMaterialsByCourseCode(courseCode);
-        return ResponseEntity.ok(ApiResponse.success("Learning materials retrieved", materials));
+        return ResponseEntity.ok(ApiResponse.success("Learning materials retrieved",
+                LearningMaterialDto.fromEntities(materials)));
     }
 
     @GetMapping("/materials/download/{fileId}")
@@ -132,16 +128,18 @@ public class TeacherController {
 
     /** Every assignment the authenticated teacher has created (across all courses). */
     @GetMapping("/assignments")
-    public ResponseEntity<ApiResponse<List<Assignment>>> getMyAssignments(Authentication auth) {
+    public ResponseEntity<ApiResponse<List<AssignmentDto>>> getMyAssignments(Authentication auth) {
         List<Assignment> assignments = courseService.getAssignmentsByTeacherEmail(auth.getName());
-        return ResponseEntity.ok(ApiResponse.success("Assignments retrieved", assignments));
+        return ResponseEntity.ok(ApiResponse.success("Assignments retrieved",
+                AssignmentDto.fromEntities(assignments)));
     }
 
     @PostMapping(value = "/create-assignment", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<ApiResponse<Assignment>> createAssignment(@Valid @ModelAttribute CreateAssignmentRequest request, Authentication auth) {
+    public ResponseEntity<ApiResponse<AssignmentDto>> createAssignment(@Valid @ModelAttribute CreateAssignmentRequest request, Authentication auth) {
         try {
             Assignment assignment = courseService.createAssignment(request, auth.getName());
-            return ResponseEntity.ok(ApiResponse.success("Assignment created", assignment));
+            return ResponseEntity.ok(ApiResponse.success("Assignment created",
+                    AssignmentDto.fromEntity(assignment)));
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(ApiResponse.error("Failed to upload questions file: " + e.getMessage()));

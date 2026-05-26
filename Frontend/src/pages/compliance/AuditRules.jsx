@@ -1,13 +1,10 @@
+
+
 import React, { useState, useEffect } from "react";
-import {  toast } from "react-toastify";
 import complianceApi from "../../api/complianceApi";
-import { FiCheck, FiX } from 'react-icons/fi';
-import axios from "axios";
-const BASE = process.env.REACT_APP_GATEWAY_URL ;
+import notify from "../../utils/notify";
 
-export default function AuditRules({ complianceId }) {
-
-    const key=localStorage.getItem("edu_access_token");
+export default function AuditRules() {
     const [rules, setRules] = useState([]);
     const [statusFilter, setStatusFilter] = useState('all');
     const [loading, setLoading] = useState(true);
@@ -20,19 +17,13 @@ export default function AuditRules({ complianceId }) {
     const fetchRules = async () => {
         try {
             setLoading(true);
-            const response = await axios.get(BASE+"/compliance-service/compliance/allRules",
-                                            {
-                                                headers: {
-                                                Authorization: `Bearer ${key}`
-                                                }
-                                            }
-                                    );
-            const allRules = response.data;
-            console.log(allRules);
-            // Filter rules that are not live (active === false)
-            const pendingRules = allRules.filter(rule => !rule.active);
+            const response = await complianceApi.fetchAllRules();
+            const allRules = response.data?.data ?? response.data ?? [];
+            const list = Array.isArray(allRules) ? allRules : [];
+            const pendingRules = list.filter(rule => !rule.active);
             setRules(pendingRules);
         } catch (err) {
+            console.error("Error fetching rules:", err);
             setError("Failed to load rules");
         } finally {
             setLoading(false);
@@ -41,23 +32,12 @@ export default function AuditRules({ complianceId }) {
 
     const handleStatusChange = async (ruleId, status) => {
         try {
-
-            console.log("id =",ruleId);
-            console.log("status =",status);
-            console.log("key =",key);
-            const response = await axios.put(BASE+`/compliance-service/compliance/rule-validate/${ruleId}/${status}`,null,
-                                            {
-                                                headers: {
-                                                Authorization: `Bearer ${key}`
-                                                }
-                                            }
-                                    );
+            await complianceApi.validateRule(ruleId, status);
             fetchRules();
-            toast.success(`Rule ${status} successfully`);
-            console.log("i am");
+            notify.success(`Rule ${status} successfully`);
         } catch (err) {
-            toast.error("Failed to validate rule");
-            
+            console.error("Error validating rule:", err);
+            notify.error("Failed to validate rule");
         }
     };
 
@@ -79,8 +59,6 @@ export default function AuditRules({ complianceId }) {
 
     return (
         <div className="p-6 bg-gray-50 min-h-screen">
-            {/* <div className="absolute bg-black h-[100px] w-[150px]"></div> */}
-            {/* <ToastContainer autoClose={3000} newestOnTop /> */}
             <div className="max-w-7xl mx-auto">
                 <h1 className="text-3xl font-bold text-gray-800 mb-6">Audit Rules</h1>
                 

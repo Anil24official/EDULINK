@@ -1,9 +1,8 @@
 package com.edulink.notificationservice.controller;
 import com.edulink.notificationservice.dto.ApiResponse;
+import com.edulink.notificationservice.dto.NotificationDto;
 import com.edulink.notificationservice.entity.Notification;
 import com.edulink.notificationservice.service.NotificationService;
-import com.edulink.notificationservice.exception.InvalidNotificationException;
-import com.edulink.notificationservice.exception.NotificationNotFoundException;
 import org.springframework.http.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -25,35 +24,37 @@ public class NotificationController {
 
     @PostMapping("/send")
     @PreAuthorize("hasAnyRole('TEACHER','SCHOOL_ADMIN')")
-    public ResponseEntity<ApiResponse<Notification>> sendNotification(@Valid @RequestBody Notification notification) {
-        log.info("Sending notification to: {} (id: {}, role: {})", notification.getRecipientEmail(), notification.getRecipientId(), notification.getRecipientRole());
-        Notification saved = notificationService.sendNotification(notification);
+    public ResponseEntity<ApiResponse<NotificationDto>> sendNotification(@Valid @RequestBody NotificationDto request) {
+        log.info("Sending notification to: {} (id: {}, role: {})",
+                request.getRecipientEmail(), request.getRecipientId(), request.getRecipientRole());
+        Notification saved = notificationService.sendNotification(request.toEntity());
         log.info("Notification saved with id: {}", saved.getId());
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ApiResponse.success("Notification sent", saved));
+                .body(ApiResponse.success("Notification sent", NotificationDto.fromEntity(saved)));
     }
 
     @PostMapping("/schedule")
     @PreAuthorize("hasAnyRole('TEACHER','SCHOOL_ADMIN')")
-    public ResponseEntity<ApiResponse<Notification>> scheduleNotification(@Valid @RequestBody Notification notification) {
-        log.info("Scheduling notification for {} at {}", notification.getRecipientEmail(), notification.getScheduledAt());
-        Notification scheduled = notificationService.scheduleNotification(notification);
+    public ResponseEntity<ApiResponse<NotificationDto>> scheduleNotification(@Valid @RequestBody NotificationDto request) {
+        log.info("Scheduling notification for {} at {}", request.getRecipientEmail(), request.getScheduledAt());
+        Notification scheduled = notificationService.scheduleNotification(request.toEntity());
         log.info("Notification scheduled with id: {}", scheduled.getId());
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ApiResponse.success("Notification scheduled", scheduled));
+                .body(ApiResponse.success("Notification scheduled", NotificationDto.fromEntity(scheduled)));
     }
 
     @GetMapping("/my")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<ApiResponse<List<Notification>>> getMyNotifications(Authentication auth) {
+    public ResponseEntity<ApiResponse<List<NotificationDto>>> getMyNotifications(Authentication auth) {
         log.info("Fetching notifications for user: {}", auth.getName());
         List<Notification> notifications = notificationService.getNotificationsForUser(auth.getName(), auth.getDetails());
         log.info("Found {} notifications for user {}", notifications.size(), auth.getName());
-        return ResponseEntity.ok(ApiResponse.success("Notifications", notifications));
+        return ResponseEntity.ok(ApiResponse.success("Notifications", NotificationDto.fromEntities(notifications)));
     }
 
     @PutMapping("/{id}/read")
-    public ResponseEntity<ApiResponse<Notification>> markRead(@PathVariable Long id) {
-        return ResponseEntity.ok(ApiResponse.success("Marked as read", notificationService.markAsRead(id)));
+    public ResponseEntity<ApiResponse<NotificationDto>> markRead(@PathVariable Long id) {
+        Notification updated = notificationService.markAsRead(id);
+        return ResponseEntity.ok(ApiResponse.success("Marked as read", NotificationDto.fromEntity(updated)));
     }
 }

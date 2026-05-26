@@ -5,10 +5,10 @@ import SectionHeader from "../../components/shared/SectionHeader";
 import GenericTable from "../../components/shared/GenericTable";
 import httpClient from "../../api/httpClient";
 const BASE = process.env.REACT_APP_GATEWAY_URL ;
-const BOARD_RULES_ENDPOINT = "/compliance-service/board/allRules";
-const BOARD_RULES_DELETE = "/compliance-service/board/rule-delete";
-const BOARD_RULES_REVIEW = "/compliance-service/board/rule-review";
-const BOARD_GET_REVIEW_MESSAGE = "/compliance-service/board/getRegulatorReviewById/";
+const BOARD_RULES_ENDPOINT = "/board/allRules";
+const BOARD_RULES_DELETE = "/board/rule-delete";
+const BOARD_RULES_REVIEW = "/board/rule-review";
+const BOARD_GET_REVIEW_MESSAGE = "/board/getRegulatorReviewById/";
 
 const filterRules = (rules, filter) => {
 	switch (filter) {
@@ -76,7 +76,7 @@ export default function RulesActivate() {
 		setMessage(null);
 		setError(null);
 		try {
-			await httpClient.put(`/compliance-service/board/ruleActivate/${ruleId}/${true}`,{
+			await httpClient.put(`/board/ruleActivate/${ruleId}/${true}`,{
 				headers:{
 					Authorization:`Bearer ${key}`,
 					"Content-Type": "application/json"
@@ -108,7 +108,7 @@ export default function RulesActivate() {
 			setReviewFlag("green")
 			
 		}else if(flagColor==='amber'){
-			setReviewFlag("#FFBF00")
+			setReviewFlag("blue")
 			
 		}else{
 			setReviewFlag("green")

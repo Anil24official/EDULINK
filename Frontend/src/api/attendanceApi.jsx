@@ -23,6 +23,25 @@ const attendanceApi = {
   /* ── School Admin ── */
   fetchAdminReport: (params) =>
     httpClient.get(Endpoints.attendance.adminReport, { params }),
+
+  /* ── Performance Metrics (PDF 4.6) ── */
+  fetchTeacherMetrics: (params) =>
+    httpClient.get(Endpoints.attendance.teacherMetrics, { params }),
+
+  fetchAdminMetrics: (params) =>
+    httpClient.get(Endpoints.attendance.adminMetrics, { params }),
+
+  fetchStudentMetrics: (params) =>
+    httpClient.get(Endpoints.attendance.studentMetrics, { params }),
+
+  createMetric: (payload) =>
+    httpClient.post(Endpoints.attendance.teacherMetrics, payload),
+
+  updateMetric: (id, payload) =>
+    httpClient.put(Endpoints.attendance.teacherMetricById(id), payload),
+
+  deleteMetric: (id) =>
+    httpClient.delete(Endpoints.attendance.teacherMetricById(id)),
 };
 
 export default attendanceApi;

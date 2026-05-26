@@ -179,7 +179,7 @@ export default function StudentDashboard() {
                 <tbody>
                   {recentAttendance.map((a, idx) => {
                     const isPresent = a.status === "PRESENT";
-                    const coursecode=recentCourses.find(c=>c.courseId===a.courseId)?.courseCode || a.courseCode || "—";
+                    const coursecode=recentCourses.find(c=>a.courseId===a.courseId)?.courseCode ;
                     return (
                       <tr key={a.id || `att-${idx}`}>
                         <td>{coursecode}</td>

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 
-const BASE = process.env.REACT_APP_GATEWAY_URL ;
+const BASE = process.env.REACT_APP_GATEWAY_URL || "http://localhost:9090";
 
 export default function AllSchools() {
 	const key=localStorage.getItem("edu_access_token");
@@ -17,7 +17,7 @@ export default function AllSchools() {
 		setLoading(true);
 		setError("");
 		try {
-			const response = await axios.get(`${BASE}/compliance-service/compliance/getAllSchool`,{
+			const response = await axios.get(`${BASE}/compliance/getAllSchool`,{
 										headers:{
 											Authorization: `Bearer ${key}`
 										}

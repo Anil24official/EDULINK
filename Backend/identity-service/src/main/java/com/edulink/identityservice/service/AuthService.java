@@ -30,23 +30,35 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
     private final StudentRepository studentRepository;
+    private final AuditLogService auditLogService;
 
-    public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtUtil jwtUtil, StudentRepository studentRepository) {
+    public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtUtil jwtUtil,
+                       StudentRepository studentRepository, AuditLogService auditLogService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtUtil = jwtUtil;
         this.studentRepository = studentRepository;
+        this.auditLogService = auditLogService;
     }
 
     public LoginResponse login(LoginRequest request) {
         User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new InvalidCredentialsException("Invalid email or password"));
+                .orElse(null);
+        if (user == null) {
+            auditLogService.recordFailure(request.getEmail(), null, "LOGIN", "/auth/login",
+                    "User not found");
+            throw new InvalidCredentialsException("Invalid email or password");
+        }
 
         if (!user.isActive()) {
+            auditLogService.recordFailure(user.getEmail(), user.getRole().name(), "LOGIN", "/auth/login",
+                    "Account deactivated");
             throw new EduLinkException("Account is deactivated", HttpStatus.FORBIDDEN);
         }
 
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+            auditLogService.recordFailure(user.getEmail(), user.getRole().name(), "LOGIN", "/auth/login",
+                    "Password mismatch");
             throw new InvalidCredentialsException("Invalid email or password");
         }
 
@@ -67,6 +79,8 @@ public class AuthService {
         String refreshToken = jwtUtil.generateRefreshToken(user.getEmail());
 
         log.info("User logged in: {} with role: {}", user.getEmail(), user.getRole());
+        auditLogService.recordSuccess(user.getEmail(), user.getRole().name(), "LOGIN", "/auth/login",
+                "Login successful");
 
         return LoginResponse.builder()
                 .accessToken(accessToken)
@@ -98,6 +112,8 @@ public class AuthService {
         user.setTemporaryPassword(null);
         userRepository.save(user);
 
+        auditLogService.recordSuccess(user.getEmail(), user.getRole().name(), "CHANGE_PASSWORD",
+                "/auth/change-password", "Password changed");
         return ApiResponse.success("Password changed successfully", null);
     }
 
@@ -140,6 +156,24 @@ public class AuthService {
     public UserResponse getUserByEmail(String email) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
+        return toResponse(user);
+    }
+
+    public UserResponse updateProfile(String email, UpdateProfileRequest request) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
+        user.setFullName(request.getFullName());
+        if (request.getDob() != null) user.setDob(request.getDob());
+        if (request.getPhone() != null) user.setPhone(request.getPhone());
+        if (request.getAddress() != null) user.setAddress(request.getAddress());
+        if (request.getGender() != null) user.setGender(request.getGender());
+        userRepository.save(user);
+        auditLogService.recordSuccess(user.getEmail(), user.getRole().name(), "UPDATE_PROFILE",
+                "/auth/update-profile", "Profile updated");
+        return toResponse(user);
+    }
+
+    private UserResponse toResponse(User user) {
         String rollNumber = studentRepository.findByUserId(String.valueOf(user.getId()))
                 .map(s -> s.getRollNumber())
                 .orElse(null);
@@ -154,23 +188,10 @@ public class AuthService {
                 .schoolId(user.getSchoolId())
                 .classId(user.getClassId())
                 .rollNumber(rollNumber)
-                .createdAt(user.getCreatedAt())
-                .build();
-    }
-
-    public UserResponse updateProfile(String email, UpdateProfileRequest request) {
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new UserNotFoundException("User not found"));
-        user.setFullName(request.getFullName());
-        userRepository.save(user);
-        return UserResponse.builder()
-                .id(user.getId())
-                .email(user.getEmail())
-                .fullName(user.getFullName())
-                .role(user.getRole())
-                .active(user.isActive())
-                .schoolId(user.getSchoolId())
-                .classId(user.getClassId())
+                .dob(user.getDob())
+                .phone(user.getPhone())
+                .address(user.getAddress())
+                .gender(user.getGender())
                 .createdAt(user.getCreatedAt())
                 .build();
     }

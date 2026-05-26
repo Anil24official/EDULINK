@@ -1,5 +1,6 @@
 package com.edulink.complianceservice.controller;
 
+import com.edulink.complianceservice.dto.RegulatorDto;
 import com.edulink.complianceservice.dto.ReportDto;
 import com.edulink.complianceservice.dto.RuleDto;
 
@@ -54,8 +55,8 @@ public class BoardController {
 
 
     @GetMapping("/allRules")
-    public ResponseEntity<List<Rule>> allRules(){
-        return ResponseEntity.ok(boardService.getRules());
+    public ResponseEntity<List<RuleDto>> allRules(){
+        return ResponseEntity.ok(RuleDto.fromEntities(boardService.getRules()));
     }
 
     @GetMapping("/usersStatus")
@@ -70,15 +71,16 @@ public class BoardController {
 
     @PostMapping("/rule-create")
     @PreAuthorize("hasRole('EDUCATION_BOARD_OFFICER')")
-    public ResponseEntity<Rule> ruleCreate(@RequestBody RuleDto ruleDto){
-        return ResponseEntity.ok(boardService.rulesCreate(ruleDto));
+    public ResponseEntity<RuleDto> ruleCreate(@RequestBody RuleDto ruleDto){
+        Rule saved = boardService.rulesCreate(ruleDto);
+        return ResponseEntity.ok(RuleDto.fromEntity(saved));
     }
 
     @PostMapping("/rule-review")
     @PreAuthorize("hasRole('EDUCATION_BOARD_OFFICER')")
-    public ResponseEntity<Rule> ruleReview(@RequestBody RuleDto ruleDto){
-//        return ResponseEntity.ok("ok");
-        return ResponseEntity.ok(boardService.ruleReview(ruleDto));
+    public ResponseEntity<RuleDto> ruleReview(@RequestBody RuleDto ruleDto){
+        Rule saved = boardService.ruleReview(ruleDto);
+        return ResponseEntity.ok(RuleDto.fromEntity(saved));
     }
 
     @DeleteMapping("/rule-delete/{id}")
@@ -89,15 +91,16 @@ public class BoardController {
     }
 
     @GetMapping("/getRegulatorReviewById/{id}")
-    public ResponseEntity<Regulator> getRegulatorReviewById(@PathVariable("id") Long id){
-        System.out.println("I am in");
-        return ResponseEntity.ok(boardService.getRegulatorReviewById(id));
+    public ResponseEntity<RegulatorDto> getRegulatorReviewById(@PathVariable("id") Long id){
+        Regulator regulator = boardService.getRegulatorReviewById(id);
+        return ResponseEntity.ok(RegulatorDto.fromEntity(regulator));
     }
 
     @PutMapping("/ruleActivate/{ruleId}/{active}")
     @PreAuthorize("hasRole('EDUCATION_BOARD_OFFICER')")
-    public ResponseEntity<Rule> ruleActivate(@PathVariable Long ruleId,@PathVariable boolean active){
-        return  ResponseEntity.ok(boardService.activeRule(ruleId,active));
+    public ResponseEntity<RuleDto> ruleActivate(@PathVariable Long ruleId,@PathVariable boolean active){
+        Rule saved = boardService.activeRule(ruleId, active);
+        return ResponseEntity.ok(RuleDto.fromEntity(saved));
     }
 
 }

@@ -49,24 +49,26 @@ public class ComplianceUserController {
     }
 
     @PostMapping("/create-school")
-    public ResponseEntity<ApiResponse<School>> createSchool(
+    public ResponseEntity<ApiResponse<SchoolDto>> createSchool(
             Authentication auth, @Valid @RequestBody SchoolCreateRequest request) {
         School school = userManagementService.createSchool(request, auth.getName());
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ApiResponse.success("School created successfully", school));
+                .body(ApiResponse.success("School created successfully", SchoolDto.fromEntity(school)));
     }
 
     @GetMapping("/schools/{schoolId}")
     @PreAuthorize("permitAll()")
-    public ResponseEntity<ApiResponse<School>> getSchoolById(@PathVariable String schoolId) {
+    public ResponseEntity<ApiResponse<SchoolDto>> getSchoolById(@PathVariable String schoolId) {
         School school = userManagementService.getSchoolById(schoolId);
-        return ResponseEntity.ok(ApiResponse.success("School retrieved successfully", school));
+        return ResponseEntity.ok(ApiResponse.success("School retrieved successfully",
+                SchoolDto.fromEntity(school)));
     }
 
     @GetMapping("/schools")
     @PreAuthorize("permitAll()")
-    public ResponseEntity<ApiResponse<List<School>>> getAllSchools() {
+    public ResponseEntity<ApiResponse<List<SchoolDto>>> getAllSchools() {
         List<School> schools = userManagementService.getAllSchools();
-        return ResponseEntity.ok(ApiResponse.success("Schools retrieved successfully", schools));
+        return ResponseEntity.ok(ApiResponse.success("Schools retrieved successfully",
+                SchoolDto.fromEntities(schools)));
     }
 }

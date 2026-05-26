@@ -36,6 +36,15 @@ public class User {
     @Column(name = "dob")
     private String dob;
 
+    @Column(name = "phone")
+    private String phone;
+
+    @Column(name = "address", columnDefinition = "TEXT")
+    private String address;
+
+    @Column(name = "gender")
+    private String gender;
+
     public String getDob() {
         return dob;
     }
@@ -43,6 +52,15 @@ public class User {
     public void setDob(String dob) {
         this.dob = dob;
     }
+
+    public String getPhone() { return phone; }
+    public void setPhone(String phone) { this.phone = phone; }
+
+    public String getAddress() { return address; }
+    public void setAddress(String address) { this.address = address; }
+
+    public String getGender() { return gender; }
+    public void setGender(String gender) { this.gender = gender; }
 
     private LocalDateTime createdAt;
 

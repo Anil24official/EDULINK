@@ -14,7 +14,6 @@ import "./AttendanceStyles.css";
 const STATUS_OPTIONS = [
   { value: "PRESENT", label: "Present", short: "P", icon: "check_circle", className: "att-pill-btn--present" },
   { value: "ABSENT",  label: "Absent",  short: "A", icon: "cancel",       className: "att-pill-btn--absent"  },
-  { value: "OD",      label: "OD",      short: "O", icon: "work",         className: "att-pill-btn--od"      },
 ];
 
 const initials = (name = "") =>
@@ -263,13 +262,13 @@ export default function RecordAttendancePage() {
               <p className="att-kpi-label">Absent</p>
             </div>
           </div>
-          <div className="att-kpi att-kpi--purple">
+          {/* <div className="att-kpi att-kpi--purple">
             <div className="att-kpi-icon"><span className="material-icons">work</span></div>
             <div className="att-kpi-body">
               <p className="att-kpi-val">{counts.OD || 0}</p>
               <p className="att-kpi-label">On Duty</p>
             </div>
-          </div>
+          </div> */}
           <div className="att-kpi att-kpi--indigo">
             <div className="att-kpi-icon"><span className="material-icons">groups</span></div>
             <div className="att-kpi-body">
@@ -301,9 +300,9 @@ export default function RecordAttendancePage() {
             <button className="att-pill-btn att-pill-btn--absent" onClick={() => markAll("ABSENT")}>
               <span className="material-icons">cancel</span> Mark all Absent
             </button>
-            <button className="att-pill-btn att-pill-btn--od" onClick={() => markAll("OD")}>
+            {/* <button className="att-pill-btn att-pill-btn--od" onClick={() => markAll("OD")}>
               <span className="material-icons">work</span> Mark all OD
-            </button>
+            </button> */}
           </div>
         </div>
       )}
@@ -388,7 +387,7 @@ export default function RecordAttendancePage() {
             <strong>{students.length}</strong> student{students.length === 1 ? "" : "s"} ·{" "}
             <span style={{ color: "#16a34a" }}>{counts.PRESENT || 0} present</span> ·{" "}
             <span style={{ color: "#dc2626" }}>{counts.ABSENT || 0} absent</span> ·{" "}
-            <span style={{ color: "#7c3aed" }}>{counts.OD || 0} OD</span>
+            {/* <span style={{ color: "#7c3aed" }}>{counts.OD || 0} OD</span> */}
           </div>
           <button className="att-primary-btn" onClick={handleSave} disabled={saving}>
             <span className="material-icons">{saving ? "hourglass_top" : "save"}</span>

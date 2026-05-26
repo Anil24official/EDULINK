@@ -23,6 +23,7 @@ import ManageUsersPage from "../pages/operator/ManageUsersPage";
 import AddComplianceOfficerPage from "../pages/operator/AddComplianceOfficerPage";
 import AddBoardOfficerPage from "../pages/operator/AddBoardOfficerPage";
 import AddRegulatorPage from "../pages/operator/AddRegulatorPage";
+import AuditLogPage from "../pages/operator/AuditLogPage";
 
 // ── Compliance ──
 import ComplianceDashboard from "../pages/compliance/DashBoard";
@@ -30,6 +31,9 @@ import RegisterSchoolPage from "../pages/compliance/RegisterSchoolPage";
 import AddSchoolAdminPage from "../pages/compliance/AddSchoolAdminPage";
 import Schools from "../pages/compliance/AllSchools";
 import AuditRules from "../pages/compliance/AuditRules";
+import ComplianceRecordsPage from "../pages/compliance/ComplianceRecordsPage";
+import AuditsPage from "../pages/compliance/AuditsPage";
+import ReportsPage from "../pages/compliance/ReportsPage";
 
 // ── Board ──
 import BoardDashboard from "../pages/board/DashBoard";
@@ -49,6 +53,7 @@ import ViewStudentsPage from "../pages/schoolAdmin/ViewStudentsPage";
 import AddCoursePage from "../pages/schoolAdmin/AddCoursePage";
 import AddClassPage from "../pages/schoolAdmin/AddClassPage";
 import AttendanceReportPage from "../pages/schoolAdmin/AttendanceReportPage";
+import VerifyDocumentsPage from "../pages/schoolAdmin/VerifyDocumentsPage";
 
 // ── Teacher ──
 import TeacherDashboard from "../pages/teacher/TeacherDashboard";
@@ -67,6 +72,7 @@ import EvaluateSubmissionPage from "../pages/teacher/EvaluateSubmissionPage";
 import AssignmentSubmissionsBrowserPage from "../pages/teacher/AssignmentSubmissionsBrowserPage";
 import AssignmentSubmissionsPage from "../pages/teacher/AssignmentSubmissionsPage";
 import EvaluateAssignmentSubmissionPage from "../pages/teacher/EvaluateAssignmentSubmissionPage";
+import PerformanceMetricsPage from "../pages/teacher/PerformanceMetricsPage";
 
 // ── Student ──
 import StudentDashboard from "../pages/student/StudentDashboard";
@@ -79,6 +85,8 @@ import TakeExamPage from "../pages/student/TakeExamPage";
 import SubmitAssignmentPage from "../pages/student/SubmitAssignmentPage";
 import ViewGradesPage from "../pages/student/ViewGradesPage";
 import ViewAttendancePage from "../pages/student/ViewAttendancePage";
+import MyDocumentsPage from "../pages/student/MyDocumentsPage";
+import MyPerformancePage from "../pages/student/MyPerformancePage";
 
 // ── Notifications ──
 import InboxPage from "../pages/notifications/InboxPage";
@@ -87,6 +95,7 @@ import ComposeNotificationPage from "../pages/notifications/ComposeNotificationP
 // ── Shared ──
 import PageNotFound from "../pages/shared/PageNotFound";
 import LandingPage from "../pages/shared/LandingPage";
+import KpiDashboardPage from "../pages/shared/KpiDashboardPage";
 
 const {
   OPERATOR,
@@ -115,7 +124,7 @@ export default function MasterRoutes() {
           <Route path="/change-password" element={<ChangePasswordPage />} />
         </Route>
 
-        {/* <Route element={<PasswordChangeGuard />}> */}
+        <Route element={<PasswordChangeGuard />}>
           <Route element={<DashboardLayout />}>
 
             {/* ── Notifications (all roles) ── */}
@@ -132,6 +141,7 @@ export default function MasterRoutes() {
               <Route path="/operator/add-compliance-officer" element={<AddComplianceOfficerPage />} />
               <Route path="/operator/add-board-officer" element={<AddBoardOfficerPage />} />
               <Route path="/operator/add-regulator" element={<AddRegulatorPage />} />
+              <Route path="/operator/audit-logs" element={<AuditLogPage />} />
             </Route>
 
             {/* ── COMPLIANCE OFFICER ── */}
@@ -141,6 +151,19 @@ export default function MasterRoutes() {
               <Route path="/compliance/register-school" element={<RegisterSchoolPage />} />
               <Route path="/compliance/add-school-admin" element={<AddSchoolAdminPage />} />
                <Route path="/compliance/audit-records" element={<AuditRules />} />
+               <Route path="/compliance/records" element={<ComplianceRecordsPage />} />
+               <Route path="/compliance/audits" element={<AuditsPage />} />
+               <Route path="/compliance/reports" element={<ReportsPage />} />
+            </Route>
+
+            {/* ── REPORTS visible to BOARD + REGULATOR (read-only) ── */}
+            <Route element={<RoleGuard permitted={[EDUCATION_BOARD_OFFICER, REGULATOR]} />}>
+              <Route path="/reports" element={<ReportsPage />} />
+            </Route>
+
+            {/* ── KPI DASHBOARD (PDF §8) — admin + board + regulator + compliance ── */}
+            <Route element={<RoleGuard permitted={[SCHOOL_ADMIN, EDUCATION_BOARD_OFFICER, REGULATOR, COMPLIANCE_OFFICER]} />}>
+              <Route path="/kpis" element={<KpiDashboardPage />} />
             </Route>
 
             {/* ── EDUCATION BOARD OFFICER ── */}
@@ -166,6 +189,7 @@ export default function MasterRoutes() {
               <Route path="/school-admin/add-course" element={<AddCoursePage />} />
               <Route path="/school-admin/add-class" element={<AddClassPage />} />
               <Route path="/school-admin/attendance-report" element={<AttendanceReportPage />} />
+              <Route path="/school-admin/verify-documents" element={<VerifyDocumentsPage />} />
             </Route>
 
             {/* ── TEACHER ── */}
@@ -189,6 +213,7 @@ export default function MasterRoutes() {
                <Route path="/teacher/assignment-submissions-browser" element={<AssignmentSubmissionsBrowserPage />} />
                <Route path="/teacher/assignment-submissions/:courseCode/:assignmentNum" element={<AssignmentSubmissionsPage />} />
                <Route path="/teacher/evaluate-assignment/:submissionId" element={<EvaluateAssignmentSubmissionPage />} />
+               <Route path="/teacher/performance-metrics" element={<PerformanceMetricsPage />} />
             </Route>
 
             {/* ── STUDENT ── */}
@@ -203,18 +228,18 @@ export default function MasterRoutes() {
               <Route path="/student/submit-assignment" element={<SubmitAssignmentPage />} />
               <Route path="/student/grades" element={<ViewGradesPage />} />
               <Route path="/student/attendance" element={<ViewAttendancePage />} />
+              <Route path="/student/documents" element={<MyDocumentsPage />} />
+              <Route path="/student/performance" element={<MyPerformancePage />} />
             </Route>
 
           </Route>
-        {/* </Route> */}
+        </Route>
       </Route>
 
       {/* ════════ FALLBACKS ════════ */}
       <Route path="/" element={<LandingPage />} />
       <Route path="/404" element={<PageNotFound />} />
       <Route path="*" element={<Navigate to="/404" replace />} />
-      
     </Routes>
-
   );
 }

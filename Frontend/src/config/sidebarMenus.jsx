@@ -7,6 +7,7 @@ const menusByRole = {
     { label: "Add Compliance Officer", path: "/operator/add-compliance-officer", icon: "person_add" },
     { label: "Add Board Officer",      path: "/operator/add-board-officer",      icon: "person_add" },
     { label: "Add Regulator",          path: "/operator/add-regulator",          icon: "person_add" },
+    { label: "Audit Logs",             path: "/operator/audit-logs",             icon: "receipt_long" },
   ],
 
   [EduLinkRoles.COMPLIANCE_OFFICER]: [
@@ -14,7 +15,11 @@ const menusByRole = {
     { label: "Schools",         path: "/compliance/Schools",        icon: "fact_check" },
     { label: "Register School",   path: "/compliance/register-school",  icon: "add_business" },
     { label: "Add School Admin",  path: "/compliance/add-school-admin", icon: "admin_panel_settings" },
-    { label: "Audit Records",     path: "/compliance/audit-records",    icon: "history" },
+    { label: "Audit Rules",       path: "/compliance/audit-records",    icon: "history" },
+    { label: "Compliance Records", path: "/compliance/records",         icon: "assignment_turned_in" },
+    { label: "Audits",            path: "/compliance/audits",           icon: "policy" },
+    { label: "Reports",           path: "/compliance/reports",          icon: "summarize" },
+    { label: "KPI Dashboard",     path: "/kpis",                        icon: "trending_up" },
 
   ],
 
@@ -22,12 +27,16 @@ const menusByRole = {
      { label: "Dashboard",              path: "/board/dashboard",           icon: "dashboard" },
     { label: "Create Rule",            path: "/board/create-rule",         icon: "add_circle" },
     { label: "Activate Rules",         path: "/board/rules-activate",     icon: "toggle_on" },
+    { label: "Reports",                path: "/reports",                  icon: "summarize" },
+    { label: "KPI Dashboard",          path: "/kpis",                     icon: "trending_up" },
 
   ],
 
   [EduLinkRoles.REGULATOR]: [
      { label: "Dashboard",           path: "/regulator/dashboard",           icon: "dashboard" },
     { label: "Rules Review",        path: "/regulator/rules-review",        icon: "flag" },
+    { label: "Reports",             path: "/reports",                       icon: "summarize" },
+    { label: "KPI Dashboard",       path: "/kpis",                          icon: "trending_up" },
 
   ],
 
@@ -40,6 +49,8 @@ const menusByRole = {
     { label: "Create Course",      path: "/school-admin/add-course",        icon: "menu_book" },
     { label: "Create Class",       path: "/school-admin/add-class",         icon: "class" },
     { label: "Attendance Report",  path: "/school-admin/attendance-report", icon: "bar_chart" },
+    { label: "Verify Documents",   path: "/school-admin/verify-documents",  icon: "verified_user" },
+    { label: "KPI Dashboard",      path: "/kpis",                           icon: "trending_up" },
   ],
 
   [EduLinkRoles.TEACHER]: [
@@ -52,6 +63,7 @@ const menusByRole = {
     { label: "Exam Submissions",         path: "/teacher/exam-submissions-browser",        icon: "fact_check" },
     { label: "View Grades",              path: "/teacher/grade",                           icon: "grading" },
     { label: "Mark Attendance",          path: "/teacher/attendance",                      icon: "how_to_reg" },
+    { label: "Performance Metrics",      path: "/teacher/performance-metrics",             icon: "insights" },
   ],
 
   [EduLinkRoles.STUDENT]: [
@@ -62,6 +74,8 @@ const menusByRole = {
     { label: "Submit Assignment", path: "/student/submit-assignment", icon: "upload_file" },
     { label: "My Grades",         path: "/student/grades",           icon: "grade" },
     { label: "My Attendance",     path: "/student/attendance",       icon: "event_available" },
+    { label: "My Documents",      path: "/student/documents",        icon: "folder_shared" },
+    { label: "My Performance",    path: "/student/performance",      icon: "insights" },
   ],
 };
 

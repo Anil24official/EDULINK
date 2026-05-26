@@ -1,6 +1,10 @@
 package com.edulink.complianceservice.dto;
 
+import com.edulink.complianceservice.entity.Regulator;
 import jakarta.validation.constraints.NotNull;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class RegulatorDto {
     private Long id;
@@ -53,5 +57,31 @@ public class RegulatorDto {
 
     public void setMessage(String message) {
         this.message = message;
+    }
+
+    public static RegulatorDto fromEntity(Regulator r) {
+        if (r == null) return null;
+        RegulatorDto d = new RegulatorDto();
+        d.setId(r.getId());
+        d.setRuleId(r.getRuleId());
+        d.setRegulatorOfficer(r.getRegulatorOfficer());
+        d.setFlag(r.getFlag());
+        d.setMessage(r.getMessage());
+        return d;
+    }
+
+    public static List<RegulatorDto> fromEntities(List<Regulator> entities) {
+        if (entities == null) return List.of();
+        return entities.stream().map(RegulatorDto::fromEntity).collect(Collectors.toList());
+    }
+
+    public Regulator toEntity() {
+        Regulator r = new Regulator();
+        r.setId(this.id);
+        r.setRuleId(this.ruleId);
+        r.setRegulatorOfficer(this.regulatorOfficer);
+        r.setFlag(this.flag);
+        r.setMessage(this.message);
+        return r;
     }
 }

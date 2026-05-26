@@ -1,65 +1,58 @@
-//package com.edulink.complianceservice.dto;
-//
-//
-//import jakarta.validation.constraints.Email;
-//import jakarta.validation.constraints.NotBlank;
-//import org.springframework.stereotype.Component;
-//
-//@Component
-//public class ComplianceRecordDto {
-//
-//    @NotBlank(message = "schoolId not fill")
-//    private String anotherId;
-//    private String auditType;
-//
-//    @Email(message = "Email not fill")
-//    private String auditorEmail;
-//
-//    @NotBlank(message = "status not fill")
-//    private String status;
-//    private String recommendations;
-//
-//    public ComplianceRecordDto(){
-//
-//    }
-//
-//    public String getAnotherId() {
-//        return anotherId;
-//    }
-//
-//    public void setAnotherId(String anotherId) {
-//        this.anotherId = anotherId;
-//    }
-//
-//    public String getAuditType() {
-//        return auditType;
-//    }
-//
-//    public void setAuditType(String auditType) {
-//        this.auditType = auditType;
-//    }
-//
-//    public String getAuditorEmail() {
-//        return auditorEmail;
-//    }
-//
-//    public void setAuditorEmail(String auditorEmail) {
-//        this.auditorEmail = auditorEmail;
-//    }
-//
-//    public String getStatus() {
-//        return status;
-//    }
-//
-//    public void setStatus(String status) {
-//        this.status = status;
-//    }
-//
-//    public String getRecommendations() {
-//        return recommendations;
-//    }
-//
-//    public void setRecommendations(String recommendations) {
-//        this.recommendations = recommendations;
-//    }
-//}
+package com.edulink.complianceservice.dto;
+
+import jakarta.validation.constraints.NotBlank;
+
+import java.time.LocalDateTime;
+
+public class ComplianceRecordDto {
+
+    private Long id;
+
+    @NotBlank(message = "entityId is required")
+    private String entityId;
+
+    @NotBlank(message = "type is required (Course | Exam | Attendance)")
+    private String type;
+
+    @NotBlank(message = "result is required")
+    private String result;
+
+    private String notes;
+
+    private String recordedByEmail;
+
+    private String schoolId;
+
+    private LocalDateTime recordedDate;
+
+    private LocalDateTime createdAt;
+
+    public ComplianceRecordDto() {}
+
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+
+    public String getEntityId() { return entityId; }
+    public void setEntityId(String entityId) { this.entityId = entityId; }
+
+    public String getType() { return type; }
+    public void setType(String type) { this.type = type; }
+
+    public String getResult() { return result; }
+    public void setResult(String result) { this.result = result; }
+
+    public String getNotes() { return notes; }
+    public void setNotes(String notes) { this.notes = notes; }
+
+    public String getRecordedByEmail() { return recordedByEmail; }
+    public void setRecordedByEmail(String recordedByEmail) { this.recordedByEmail = recordedByEmail; }
+
+    public String getSchoolId() { return schoolId; }
+    public void setSchoolId(String schoolId) { this.schoolId = schoolId; }
+
+    public LocalDateTime getRecordedDate() { return recordedDate; }
+    public void setRecordedDate(LocalDateTime recordedDate) { this.recordedDate = recordedDate; }
+
+    public LocalDateTime getCreatedAt() { return createdAt; }
+    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+}

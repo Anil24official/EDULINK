@@ -427,7 +427,79 @@ textarea.input-invalid:focus {
   white-space: pre-wrap;
   overflow: auto;
   line-height: 1.4;
+  max-height: 360px;
 }
+
+/* ─── Evaluate / Grade page: 2-column (Submission | Grading) ─── */
+.eval-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: clamp(0.85rem, 1.4vw, 1.15rem);
+  align-items: start;
+  margin-top: 1rem;
+}
+@media (min-width: 900px) {
+  .eval-grid {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+}
+.eval-panel {
+  background: var(--dash-surface);
+  border: 1px solid var(--dash-border-soft);
+  border-radius: 14px;
+  box-shadow: var(--dash-shadow-sm);
+  padding: 1.15rem 1.2rem;
+  min-width: 0;
+}
+.eval-panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+  margin-bottom: 0.85rem;
+  padding-bottom: 0.7rem;
+  border-bottom: 1px solid var(--dash-border-soft);
+}
+.eval-panel-head h3 {
+  font-size: 1rem;
+  color: var(--dash-ink);
+  letter-spacing: -0.005em;
+}
+.eval-panel h4 {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--dash-ink-soft);
+  margin: 0.9rem 0 0.4rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.eval-meta {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 0.6rem 0.85rem;
+  margin: 0 0 0.85rem;
+}
+.eval-meta > div {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+}
+.eval-meta dt {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--dash-ink-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.eval-meta dd {
+  margin: 0;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--dash-ink);
+  word-break: break-word;
+}
+
 
 .temp-password-box {
   background: #e8f5e9;

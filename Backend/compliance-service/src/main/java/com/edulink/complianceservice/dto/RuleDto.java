@@ -1,10 +1,12 @@
 package com.edulink.complianceservice.dto;
 
-import jakarta.persistence.Column;
+import com.edulink.complianceservice.entity.Rule;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 public class RuleDto {
@@ -23,6 +25,7 @@ public class RuleDto {
 
     private String status;
     private  boolean active;
+    private boolean review;
 
     private Date ruleCreate;
     private Date ruleActive;
@@ -30,6 +33,45 @@ public class RuleDto {
     public RuleDto(){
 
     }
+
+    public static RuleDto fromEntity(Rule r) {
+        if (r == null) return null;
+        RuleDto d = new RuleDto();
+        d.id = r.getId() == null ? 0 : r.getId();
+        d.ruleType = r.getRuleType();
+        d.boardOfficerId = r.getBoardOfficerId();
+        d.complianceOfferId = r.getComplianceOfferId();
+        d.ruleConfig = r.getRuleConfig();
+        d.status = r.getStatus();
+        d.active = r.isActive();
+        d.review = r.isReview();
+        d.ruleCreate = r.getRuleCreate();
+        d.ruleActive = r.getRuleActive();
+        return d;
+    }
+
+    public static List<RuleDto> fromEntities(List<Rule> entities) {
+        if (entities == null) return List.of();
+        return entities.stream().map(RuleDto::fromEntity).collect(Collectors.toList());
+    }
+
+    public Rule toEntity() {
+        Rule r = new Rule();
+        r.setId(this.id);
+        r.setRuleType(this.ruleType);
+        r.setBoardOfficerId(this.boardOfficerId);
+        r.setComplianceOfferId(this.complianceOfferId);
+        r.setRuleConfig(this.ruleConfig);
+        if (this.status != null) r.setStatus(this.status);
+        r.setActive(this.active);
+        r.setReview(this.review);
+        if (this.ruleCreate != null) r.setRuleCreate(this.ruleCreate);
+        if (this.ruleActive != null) r.setRuleActive(this.ruleActive);
+        return r;
+    }
+
+    public boolean isReview() { return review; }
+    public void setReview(boolean review) { this.review = review; }
 
     public Date getRuleActive() {
         return ruleActive;

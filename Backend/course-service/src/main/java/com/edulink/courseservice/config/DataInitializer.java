@@ -31,7 +31,7 @@ public class DataInitializer {
             ClassRoom classRoom = null;
             if (classRepo.count() == 0) {
                 classRoom = classRepo.save(ClassRoom.builder().className("Class 10A").grade(10).section("A")
-                        .schoolId("SCH001").teacherEmail("teacher@greenwood.edu.com").capacity(35).build());
+                        .schoolId("SCH001").teacherEmail("teacher@greenwood.edu").capacity(35).build());
                 log.info("==> Sample class created with ID: {}", classRoom.getId());
             } else {
                 classRoom = classRepo.findByClassName("Class 10A").orElse(null);
@@ -58,7 +58,7 @@ public class DataInitializer {
 
             try {
                 if (materialRepo.findByCourseCode("MATH101").isEmpty()) {
-                    materialRepo.save(LearningMaterial.builder().courseCode("MATH101").teacherEmail("teacher@school.com")
+                    materialRepo.save(LearningMaterial.builder().courseCode("MATH101").teacherEmail("teacher@greenwood.edu")
                             .title("Chapter 1: Algebra Basics").description("Introduction to algebraic expressions")
                             .fileId("sample-file-id").fileName("ch1.pdf").fileSize(1024000L).contentType("application/pdf").materialType("PDF").build());
                 }
@@ -67,7 +67,7 @@ public class DataInitializer {
             }
 
             if (assignmentRepo.findByCourseCode("MATH101").isEmpty()) {
-                assignmentRepo.save(Assignment.builder().courseCode("MATH101").teacherEmail("teacher@school.com")
+                assignmentRepo.save(Assignment.builder().courseCode("MATH101").teacherEmail("teacher@greenwood.edu")
                         .assignmentNum(1)
                         .title("Algebra Assignment 1").description("Solve equations 1-20").maxMarks(20)
                         .dueDate(LocalDateTime.now().plusDays(7)).build());

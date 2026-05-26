@@ -1,12 +1,14 @@
 package com.edulink.examservice.controller;
 
 import com.edulink.examservice.dto.ApiResponse;
-import com.edulink.examservice.dto.CreateExamRequest;
 import com.edulink.examservice.dto.CreateGradeRequest;
+import com.edulink.examservice.dto.ExamDto;
+import com.edulink.examservice.dto.ExamSubmissionDto;
+import com.edulink.examservice.dto.GradeDto;
 import com.edulink.examservice.dto.SubmitExamRequest;
-import com.edulink.examservice.entity.*;
-import com.edulink.examservice.exception.AccessDeniedException;
-import com.edulink.examservice.exception.InvalidExamException;
+import com.edulink.examservice.entity.Exam;
+import com.edulink.examservice.entity.ExamSubmission;
+import com.edulink.examservice.entity.Grade;
 import com.edulink.examservice.service.*;
 import jakarta.validation.Valid;
 import org.springframework.http.*;
@@ -34,7 +36,7 @@ public class ExamController {
 
     @PostMapping(value = "/teacher/create-exam", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @PreAuthorize("hasRole('TEACHER')")
-    public ResponseEntity<ApiResponse<Exam>> createExam(
+    public ResponseEntity<ApiResponse<ExamDto>> createExam(
             @RequestParam String courseCode,
             @RequestParam String examTitle,
             @RequestParam String examType,
@@ -45,7 +47,6 @@ public class ExamController {
             @RequestParam(required = false) Integer durationMinutes,
             @RequestParam(required = false) MultipartFile questionsFile) throws IOException {
 
-        // Convert request to exam entity
         Exam exam = new Exam();
         exam.setCourseCode(courseCode);
         exam.setExamTitle(examTitle);
@@ -56,13 +57,14 @@ public class ExamController {
         exam.setExamDate(examDate);
         exam.setDurationMinutes(durationMinutes);
 
+        Exam saved = examService.createExam(exam, questionsFile);
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ApiResponse.success("Exam created", examService.createExam(exam, questionsFile)));
+                .body(ApiResponse.success("Exam created", ExamDto.fromEntity(saved)));
     }
 
     @PostMapping("/teacher/grade-student")
     @PreAuthorize("hasRole('TEACHER')")
-    public ResponseEntity<ApiResponse<Grade>> gradeStudent(@Valid @RequestBody CreateGradeRequest request) {
+    public ResponseEntity<ApiResponse<GradeDto>> gradeStudent(@Valid @RequestBody CreateGradeRequest request) {
         Grade grade = new Grade();
         grade.setCourseCode(request.getCourseCode());
         grade.setExamType(request.getExamType());
@@ -73,25 +75,28 @@ public class ExamController {
         grade.setPassingMarks(request.getPassingMarks());
         grade.setRemarks(request.getRemarks());
 
-        return ResponseEntity.ok(ApiResponse.success("Student graded", gradeService.gradeStudent(grade)));
+        Grade saved = gradeService.gradeStudent(grade);
+        return ResponseEntity.ok(ApiResponse.success("Student graded", GradeDto.fromEntity(saved)));
     }
 
     @GetMapping("/student/grades")
     @PreAuthorize("hasRole('STUDENT')")
-    public ResponseEntity<ApiResponse<List<Grade>>> getStudentGrades() {
+    public ResponseEntity<ApiResponse<List<GradeDto>>> getStudentGrades() {
         Object details = SecurityContextHolder.getContext().getAuthentication().getDetails();
         String rollNumber = (details instanceof String d && !d.contains("@")) ? d : null;
         if (rollNumber == null) {
             throw new RuntimeException("Roll number not found in token");
         }
-        return ResponseEntity.ok(ApiResponse.success("Grades retrieved", gradeService.getGradesByRollNumber(rollNumber)));
+        return ResponseEntity.ok(ApiResponse.success("Grades retrieved",
+                GradeDto.fromEntities(gradeService.getGradesByRollNumber(rollNumber))));
     }
 
     @GetMapping("/student/exams")
     @PreAuthorize("hasRole('STUDENT')")
-    public ResponseEntity<ApiResponse<List<Exam>>> getAvailableExams(@RequestParam List<String> courseCodes) {
+    public ResponseEntity<ApiResponse<List<ExamDto>>> getAvailableExams(@RequestParam List<String> courseCodes) {
         List<Exam> exams = examService.getExamsByCourseCodes(courseCodes);
-        return ResponseEntity.ok(ApiResponse.success("Available exams retrieved", exams));
+        return ResponseEntity.ok(ApiResponse.success("Available exams retrieved",
+                ExamDto.fromEntities(exams)));
     }
 
     @GetMapping("/student/download-exam-questions/{examId}")
@@ -107,29 +112,21 @@ public class ExamController {
                 .body(fileContent);
     }
 
-    /**
-     * Student clicks "Start Exam". Creates (or returns) the in-progress submission row
-     * carrying startedAt. Frontend uses startedAt + exam.durationMinutes to compute the
-     * countdown deadline. Refresh-safe: re-calling returns the same startedAt.
-     */
     @PostMapping("/student/start-exam")
     @PreAuthorize("hasRole('STUDENT')")
-    public ResponseEntity<ApiResponse<ExamSubmission>> startExam(@RequestBody SubmitExamRequest request) {
+    public ResponseEntity<ApiResponse<ExamSubmissionDto>> startExam(@RequestBody SubmitExamRequest request) {
         String studentEmail = SecurityContextHolder.getContext().getAuthentication().getName();
         Object details = SecurityContextHolder.getContext().getAuthentication().getDetails();
         String rollNumber = (details instanceof String s && !s.contains("@")) ? s : null;
 
         ExamSubmission attempt = examSubmissionService.startExam(
                 request.getCourseCode(), request.getExamType(), studentEmail, rollNumber);
-        return ResponseEntity.ok(ApiResponse.success("Exam started", attempt));
+        return ResponseEntity.ok(ApiResponse.success("Exam started", ExamSubmissionDto.fromEntity(attempt)));
     }
 
-    /**
-     * Final submission — text answer only. Students type their answer; no file uploads.
-     */
     @PostMapping("/student/submit-exam")
     @PreAuthorize("hasRole('STUDENT')")
-    public ResponseEntity<ApiResponse<ExamSubmission>> submitExam(@Valid @RequestBody SubmitExamRequest request) {
+    public ResponseEntity<ApiResponse<ExamSubmissionDto>> submitExam(@Valid @RequestBody SubmitExamRequest request) {
         String studentEmail = SecurityContextHolder.getContext().getAuthentication().getName();
         Object details = SecurityContextHolder.getContext().getAuthentication().getDetails();
         String rollNumber = (details instanceof String s && !s.contains("@")) ? s : null;
@@ -138,48 +135,44 @@ public class ExamController {
                 request.getCourseCode(), request.getExamType(),
                 studentEmail, rollNumber, request.getSubmissionContent());
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ApiResponse.success("Exam submitted successfully", submission));
+                .body(ApiResponse.success("Exam submitted successfully", ExamSubmissionDto.fromEntity(submission)));
     }
 
     @GetMapping("/teacher/exam-submissions/{courseCode}")
     @PreAuthorize("hasRole('TEACHER')")
-    public ResponseEntity<ApiResponse<List<ExamSubmission>>> getExamSubmissions(@PathVariable String courseCode) {
+    public ResponseEntity<ApiResponse<List<ExamSubmissionDto>>> getExamSubmissions(@PathVariable String courseCode) {
         List<ExamSubmission> submissions = examSubmissionService.getSubmissionsByCourseCode(courseCode);
-        return ResponseEntity.ok(ApiResponse.success("Exam submissions retrieved", submissions));
+        return ResponseEntity.ok(ApiResponse.success("Exam submissions retrieved",
+                ExamSubmissionDto.fromEntities(submissions)));
     }
 
-    /** Fetch a single submission with its content — backs the contextual evaluate page. */
     @GetMapping("/teacher/submission/{id}")
     @PreAuthorize("hasRole('TEACHER')")
-    public ResponseEntity<ApiResponse<ExamSubmission>> getSubmissionById(@PathVariable Long id) {
+    public ResponseEntity<ApiResponse<ExamSubmissionDto>> getSubmissionById(@PathVariable Long id) {
         ExamSubmission submission = examSubmissionService.getSubmissionById(id)
                 .orElseThrow(() -> new com.edulink.examservice.exception.ResourceNotFoundException(
                         "Submission not found: " + id));
-        return ResponseEntity.ok(ApiResponse.success("Submission retrieved", submission));
+        return ResponseEntity.ok(ApiResponse.success("Submission retrieved",
+                ExamSubmissionDto.fromEntity(submission)));
     }
 
-    /** Used by the per-exam roster table to mark students that already have a grade. */
     @GetMapping("/teacher/grades")
     @PreAuthorize("hasRole('TEACHER')")
-    public ResponseEntity<ApiResponse<List<Grade>>> getGradesByExam(
+    public ResponseEntity<ApiResponse<List<GradeDto>>> getGradesByExam(
             @RequestParam String courseCode,
             @RequestParam String examType) {
         List<Grade> grades = gradeService.getGradesByCourseCodeAndExamType(courseCode, examType);
-        return ResponseEntity.ok(ApiResponse.success("Grades retrieved", grades));
+        return ResponseEntity.ok(ApiResponse.success("Grades retrieved",
+                GradeDto.fromEntities(grades)));
     }
 
-    /** All grades for a course across every examType — backs the View Grades page. */
     @GetMapping("/teacher/grades-by-course/{courseCode}")
     @PreAuthorize("hasRole('TEACHER')")
-    public ResponseEntity<ApiResponse<List<Grade>>> getGradesByCourse(@PathVariable String courseCode) {
+    public ResponseEntity<ApiResponse<List<GradeDto>>> getGradesByCourse(@PathVariable String courseCode) {
         return ResponseEntity.ok(ApiResponse.success("Grades retrieved",
-                gradeService.getGradesByCourseCode(courseCode)));
+                GradeDto.fromEntities(gradeService.getGradesByCourseCode(courseCode))));
     }
 
-    /**
-     * Teacher-only "Reset Attempt": wipes a student's submission for an exam so they can retake.
-     * Idempotent — returns the number of rows deleted (0 if nothing was there).
-     */
     @DeleteMapping("/teacher/reset-attempt")
     @PreAuthorize("hasRole('TEACHER')")
     public ResponseEntity<ApiResponse<Long>> resetAttempt(
@@ -194,18 +187,16 @@ public class ExamController {
 
     @GetMapping("/teacher/exams/{courseCode}")
     @PreAuthorize("hasRole('TEACHER')")
-    public ResponseEntity<ApiResponse<List<Exam>>> getExamsByCourseCode(@PathVariable String courseCode) {
+    public ResponseEntity<ApiResponse<List<ExamDto>>> getExamsByCourseCode(@PathVariable String courseCode) {
         List<Exam> exams = examService.getExamsByCourseCode(courseCode);
-        return ResponseEntity.ok(ApiResponse.success("Exams retrieved", exams));
+        return ResponseEntity.ok(ApiResponse.success("Exams retrieved", ExamDto.fromEntities(exams)));
     }
 
-    /** Returns every exam the authenticated teacher has created (across all courses). */
     @GetMapping("/teacher/exams")
     @PreAuthorize("hasRole('TEACHER')")
-    public ResponseEntity<ApiResponse<List<Exam>>> getMyExams() {
+    public ResponseEntity<ApiResponse<List<ExamDto>>> getMyExams() {
         String teacherEmail = SecurityContextHolder.getContext().getAuthentication().getName();
         List<Exam> exams = examService.getExamsByTeacherEmail(teacherEmail);
-        return ResponseEntity.ok(ApiResponse.success("Exams retrieved", exams));
+        return ResponseEntity.ok(ApiResponse.success("Exams retrieved", ExamDto.fromEntities(exams)));
     }
-
 }

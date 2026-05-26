@@ -57,6 +57,31 @@ const studentApi = {
   /* ── POST /student/profile (public, no auth needed) ── */
   createProfile: (payload) =>
     httpClient.post(Endpoints.student.createProfile, payload),
+
+  /* ── Student Documents (PDF 4.2) ── */
+  fetchMyDocuments: () =>
+    httpClient.get(Endpoints.student.documents),
+
+  uploadDocument: (docType, file) => {
+    const fd = new FormData();
+    fd.append("docType", docType);
+    fd.append("file", file);
+    return httpClient.post(Endpoints.student.uploadDocument, fd, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+  },
+
+  downloadDocument: (id) =>
+    httpClient.get(Endpoints.student.downloadDocument(id), {
+      responseType: "blob",
+    }),
+
+  deleteDocument: (id) =>
+    httpClient.delete(Endpoints.student.documentById(id)),
+
+  /* ── Student Performance Metrics (PDF 4.6) ── */
+  fetchMyPerformanceMetrics: (params) =>
+    httpClient.get(Endpoints.student.performanceMetrics, { params }),
 };
 
 export default studentApi;

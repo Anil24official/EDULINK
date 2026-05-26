@@ -69,6 +69,10 @@ const identityApi = {
   /* ── Teacher Actions ── */
   fetchStudentsByClass: (params) =>
     httpClient.get(Endpoints.identity.studentsByClass, { params }),
+
+  /* ── Operator: Audit Logs (PDF 4.1) ── */
+  fetchAuditLogs: (params) =>
+    httpClient.get(Endpoints.identity.auditLogs, { params }),
 };
 
 export default identityApi;

@@ -14,6 +14,10 @@ public class UserResponse {
     private String schoolId;
     private Long classId;
     private String rollNumber;
+    private String dob;
+    private String phone;
+    private String address;
+    private String gender;
     private LocalDateTime createdAt;
 
     // Getters and setters
@@ -97,6 +101,18 @@ public class UserResponse {
         this.rollNumber = rollNumber;
     }
 
+    public String getDob() { return dob; }
+    public void setDob(String dob) { this.dob = dob; }
+
+    public String getPhone() { return phone; }
+    public void setPhone(String phone) { this.phone = phone; }
+
+    public String getAddress() { return address; }
+    public void setAddress(String address) { this.address = address; }
+
+    public String getGender() { return gender; }
+    public void setGender(String gender) { this.gender = gender; }
+
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
@@ -120,6 +136,10 @@ public class UserResponse {
         private String schoolId;
         private Long classId;
         private String rollNumber;
+        private String dob;
+        private String phone;
+        private String address;
+        private String gender;
         private LocalDateTime createdAt;
 
         public Builder id(String id) {
@@ -172,6 +192,11 @@ public class UserResponse {
             return this;
         }
 
+        public Builder dob(String dob) { this.dob = dob; return this; }
+        public Builder phone(String phone) { this.phone = phone; return this; }
+        public Builder address(String address) { this.address = address; return this; }
+        public Builder gender(String gender) { this.gender = gender; return this; }
+
         public Builder createdAt(LocalDateTime createdAt) {
             this.createdAt = createdAt;
             return this;
@@ -189,6 +214,10 @@ public class UserResponse {
             response.schoolId = this.schoolId;
             response.classId = this.classId;
             response.rollNumber = this.rollNumber;
+            response.dob = this.dob;
+            response.phone = this.phone;
+            response.address = this.address;
+            response.gender = this.gender;
             response.createdAt = this.createdAt;
             return response;
         }

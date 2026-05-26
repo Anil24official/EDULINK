@@ -76,7 +76,8 @@ public class JwtFilter extends OncePerRequestFilter {
     private boolean isValidRole(String role) {
         return role.equals("COMPLIANCE_OFFICER") ||
                 role.equals("EDUCATION_BOARD_OFFICER") ||
-                role.equals("REGULATOR");
+                role.equals("REGULATOR") ||
+                role.equals("SCHOOL_ADMIN");
     }
 }
 

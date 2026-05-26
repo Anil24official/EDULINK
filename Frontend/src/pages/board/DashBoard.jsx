@@ -21,7 +21,6 @@ const COLORS = {
 };
 
 export default function DashBoard(){
-    //-----------initialize the variable to store data--------------
     const key=localStorage.getItem("edu_access_token");
     const [loading, setLoading] = useState(true);
     const [totalRules, setTotalRules] = useState();
@@ -30,13 +29,11 @@ export default function DashBoard(){
     const [totalUser, setTotalUser] = useState();
     const [userChartData, setUserChartData] = useState([]);
     const [statusDatas,setStatusDatas]=useState();
-
-
-    //-----------this function belong to collect data of rules from backend----------------
+    
     async function collectRulesData(){
         try{
 
-            const res=await axios.get(BASE+"/compliance-service/board/reports",
+            const res=await axios.get(BASE+"/board/reports",
                                             {
                                                 headers: {
                                                 Authorization: `Bearer ${key}`
@@ -80,10 +77,9 @@ export default function DashBoard(){
         }
     }
 
-    //-----------this function belong to collect data of users from backend----------------
     async function collectUsersData(){
         try{
-            const res=await axios.get(BASE+"/compliance-service/board/usersStatus",            
+            const res=await axios.get(BASE+"/board/usersStatus",
                                                                         {
                                                                             headers: {
                                                                             Authorization: `Bearer ${key}`
@@ -115,14 +111,10 @@ export default function DashBoard(){
         }
     }
 
-     useEffect(()=>{
-            collectUsersData();
-        },[])
-        useEffect(()=>{
-            if(totalUser){
-                collectRulesData();
-            }
-        },[totalUser])
+    useEffect(()=>{
+        collectUsersData();
+        collectRulesData();
+    },[])
 
 
     return(
@@ -141,7 +133,7 @@ export default function DashBoard(){
                     <Heading title="Board Officer Dashboard" subtitle="Real-time monitoring and analytics" />
                     
 
-                    {/* Status Cards Section */}
+                    {/* Stats Cards Section */}
                     <StatusCard props={statusDatas} />
 
 
@@ -162,6 +154,39 @@ export default function DashBoard(){
                 </div>
             )}
 
+            {/* Add custom animations */}
+            <style>{`
+                @keyframes fadeDown {
+                    from {
+                        opacity: 0;
+                        transform: translateY(-20px);
+                    }
+                    to {
+                        opacity: 1;
+                        transform: translateY(0);
+                    }
+                }
+
+                @keyframes fadeUp {
+                    from {
+                        opacity: 0;
+                        transform: translateY(20px);
+                    }
+                    to {
+                        opacity: 1;
+                        transform: translateY(0);
+                    }
+                }
+
+                .animate-fadeDown {
+                    animation: fadeDown 0.6s ease-out;
+                }
+
+                .animate-fadeUp {
+                    animation: fadeUp 0.6s ease-out forwards;
+                    opacity: 0;
+                }
+            `}</style>
         </div>
     )
 }
