@@ -1,4 +1,8 @@
-const BASE = process.env.REACT_APP_GATEWAY_URL || "http://localhost:9090";;
+// Spec §8 — API versioning. Gateway accepts both /auth/login and /v1/auth/login,
+// so this defaults to "/v1". Override with REACT_APP_API_VERSION="" for un-versioned.
+const GATEWAY = process.env.REACT_APP_GATEWAY_URL || "http://localhost:9090";
+const API_VERSION = process.env.REACT_APP_API_VERSION ?? "/v1";
+const BASE = `${GATEWAY}${API_VERSION}`;
 
 const Endpoints = {
 

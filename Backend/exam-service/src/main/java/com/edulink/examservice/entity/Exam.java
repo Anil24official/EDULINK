@@ -29,12 +29,23 @@ public class Exam {
     /** How long the student has to complete the exam once started. Null = no time limit. */
     private Integer durationMinutes;
 
+    /** Spec §4.5 — Exam.Status. Values: SCHEDULED, IN_PROGRESS, COMPLETED, CANCELLED. */
+    @Column(name = "status", length = 20)
+    private String status = "SCHEDULED";
+
     public Exam() {
     }
 
     public Exam(Long id, String courseCode, String teacherEmail, String examTitle, String examType,
                 int totalMarks, int passingMarks, String schoolId, String questionsFileId,
                 LocalDateTime examDate, LocalDateTime createdAt, Integer durationMinutes) {
+        this(id, courseCode, teacherEmail, examTitle, examType, totalMarks, passingMarks, schoolId,
+             questionsFileId, examDate, createdAt, durationMinutes, "SCHEDULED");
+    }
+
+    public Exam(Long id, String courseCode, String teacherEmail, String examTitle, String examType,
+                int totalMarks, int passingMarks, String schoolId, String questionsFileId,
+                LocalDateTime examDate, LocalDateTime createdAt, Integer durationMinutes, String status) {
         this.id = id;
         this.courseCode = courseCode;
         this.teacherEmail = teacherEmail;
@@ -47,6 +58,7 @@ public class Exam {
         this.examDate = examDate;
         this.createdAt = createdAt;
         this.durationMinutes = durationMinutes;
+        this.status = status;
     }
 
     public Long getId() { return id; }
@@ -73,9 +85,14 @@ public class Exam {
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
     public Integer getDurationMinutes() { return durationMinutes; }
     public void setDurationMinutes(Integer durationMinutes) { this.durationMinutes = durationMinutes; }
+    public String getStatus() { return status; }
+    public void setStatus(String status) { this.status = status; }
 
     @PrePersist
-    protected void onCreate() { createdAt = LocalDateTime.now(); }
+    protected void onCreate() {
+        createdAt = LocalDateTime.now();
+        if (status == null || status.isBlank()) status = "SCHEDULED";
+    }
 
     public static Builder builder() { return new Builder(); }
 
@@ -92,6 +109,7 @@ public class Exam {
         private LocalDateTime examDate;
         private LocalDateTime createdAt;
         private Integer durationMinutes;
+        private String status = "SCHEDULED";
 
         public Builder id(Long id) { this.id = id; return this; }
         public Builder courseCode(String courseCode) { this.courseCode = courseCode; return this; }
@@ -105,9 +123,10 @@ public class Exam {
         public Builder examDate(LocalDateTime examDate) { this.examDate = examDate; return this; }
         public Builder createdAt(LocalDateTime createdAt) { this.createdAt = createdAt; return this; }
         public Builder durationMinutes(Integer durationMinutes) { this.durationMinutes = durationMinutes; return this; }
+        public Builder status(String status) { this.status = status; return this; }
 
         public Exam build() {
-            return new Exam(id, courseCode, teacherEmail, examTitle, examType, totalMarks, passingMarks, schoolId, questionsFileId, examDate, createdAt, durationMinutes);
+            return new Exam(id, courseCode, teacherEmail, examTitle, examType, totalMarks, passingMarks, schoolId, questionsFileId, examDate, createdAt, durationMinutes, status);
         }
     }
 }

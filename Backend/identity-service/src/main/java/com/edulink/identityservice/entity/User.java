@@ -1,5 +1,6 @@
 package com.edulink.identityservice.entity;
 
+import com.edulink.identityservice.security.PiiEncryptionConverter;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
@@ -36,14 +37,25 @@ public class User {
     @Column(name = "dob")
     private String dob;
 
-    @Column(name = "phone")
+    /** Spec §8 — encrypted at rest (AES-GCM via PiiEncryptionConverter). */
+    @Convert(converter = PiiEncryptionConverter.class)
+    @Column(name = "phone", length = 512)
     private String phone;
 
+    /** Spec §8 — encrypted at rest (AES-GCM via PiiEncryptionConverter). */
+    @Convert(converter = PiiEncryptionConverter.class)
     @Column(name = "address", columnDefinition = "TEXT")
     private String address;
 
     @Column(name = "gender")
     private String gender;
+
+    /** Spec §4.1 — User.Status. Values: ACTIVE, INACTIVE, SUSPENDED. Mirrored to legacy `active` boolean for back-compat. */
+    @Column(name = "status", length = 20)
+    private String status = "ACTIVE";
+
+    public String getStatus() { return status; }
+    public void setStatus(String status) { this.status = status; }
 
     public String getDob() {
         return dob;

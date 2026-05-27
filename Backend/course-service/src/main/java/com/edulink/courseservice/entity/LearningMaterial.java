@@ -18,6 +18,8 @@ public class LearningMaterial {
     private String contentType;     // MIME type
     private String materialType;    // PDF, VIDEO, LINK, DOCUMENT
     private LocalDateTime uploadedAt;
+    /** Spec §4.4 — LearningMaterial.Status. Values: ACTIVE, ARCHIVED. */
+    private String status = "ACTIVE";
 
 
     public LearningMaterial() {
@@ -26,6 +28,12 @@ public class LearningMaterial {
     public LearningMaterial(String id, String courseCode, String teacherEmail, String title, String description,
                             String fileId, String fileName, Long fileSize, String contentType,
                             String materialType, LocalDateTime uploadedAt) {
+        this(id, courseCode, teacherEmail, title, description, fileId, fileName, fileSize, contentType, materialType, uploadedAt, "ACTIVE");
+    }
+
+    public LearningMaterial(String id, String courseCode, String teacherEmail, String title, String description,
+                            String fileId, String fileName, Long fileSize, String contentType,
+                            String materialType, LocalDateTime uploadedAt, String status) {
         this.id = id;
         this.courseCode = courseCode;
         this.teacherEmail = teacherEmail;
@@ -37,6 +45,7 @@ public class LearningMaterial {
         this.contentType = contentType;
         this.materialType = materialType;
         this.uploadedAt = uploadedAt;
+        this.status = status;
     }
 
     public LearningMaterial(String courseCode, String teacherEmail, String title, String description,
@@ -76,6 +85,8 @@ public class LearningMaterial {
     public void setMaterialType(String materialType) { this.materialType = materialType; }
     public LocalDateTime getUploadedAt() { return uploadedAt; }
     public void setUploadedAt(LocalDateTime uploadedAt) { this.uploadedAt = uploadedAt; }
+    public String getStatus() { return status; }
+    public void setStatus(String status) { this.status = status; }
 
     public static Builder builder() { return new Builder(); }
 
@@ -91,6 +102,7 @@ public class LearningMaterial {
         private String contentType;
         private String materialType;
         private LocalDateTime uploadedAt;
+        private String status = "ACTIVE";
 
         public Builder id(String id) { this.id = id; return this; }
         public Builder courseCode(String courseCode) { this.courseCode = courseCode; return this; }
@@ -103,10 +115,11 @@ public class LearningMaterial {
         public Builder contentType(String contentType) { this.contentType = contentType; return this; }
         public Builder materialType(String materialType) { this.materialType = materialType; return this; }
         public Builder uploadedAt(LocalDateTime uploadedAt) { this.uploadedAt = uploadedAt; return this; }
+        public Builder status(String status) { this.status = status; return this; }
 
         public LearningMaterial build() {
             return new LearningMaterial(id, courseCode, teacherEmail, title, description, fileId, fileName,
-                fileSize, contentType, materialType, uploadedAt);
+                fileSize, contentType, materialType, uploadedAt, status);
         }
     }
 }

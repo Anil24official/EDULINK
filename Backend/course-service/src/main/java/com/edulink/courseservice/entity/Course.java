@@ -13,6 +13,8 @@ public class Course {
     private Long teacherId;
     private String subject;
     private String grade;
+    /** Spec §4.3 — Course.Credits. */
+    private Integer credits;
     private boolean active = true;
     private LocalDateTime createdAt;
 
@@ -21,6 +23,11 @@ public class Course {
 
     public Course(Long id, String courseCode, String courseName, String description, Long classId, String schoolId,
                   Long teacherId, String subject, String grade, boolean active, LocalDateTime createdAt) {
+        this(id, courseCode, courseName, description, classId, schoolId, teacherId, subject, grade, null, active, createdAt);
+    }
+
+    public Course(Long id, String courseCode, String courseName, String description, Long classId, String schoolId,
+                  Long teacherId, String subject, String grade, Integer credits, boolean active, LocalDateTime createdAt) {
         this.id = id;
         this.courseCode = courseCode;
         this.courseName = courseName;
@@ -30,6 +37,7 @@ public class Course {
         this.teacherId = teacherId;
         this.subject = subject;
         this.grade = grade;
+        this.credits = credits;
         this.active = active;
         this.createdAt = createdAt;
     }
@@ -52,6 +60,8 @@ public class Course {
     public void setSubject(String subject) { this.subject = subject; }
     public String getGrade() { return grade; }
     public void setGrade(String grade) { this.grade = grade; }
+    public Integer getCredits() { return credits; }
+    public void setCredits(Integer credits) { this.credits = credits; }
     public boolean isActive() { return active; }
     public void setActive(boolean active) { this.active = active; }
     public LocalDateTime getCreatedAt() { return createdAt; }
@@ -71,6 +81,7 @@ public class Course {
         private Long teacherId;
         private String subject;
         private String grade;
+        private Integer credits;
         private boolean active = true;
         private LocalDateTime createdAt;
 
@@ -83,10 +94,11 @@ public class Course {
         public Builder teacherId(Long teacherId) { this.teacherId = teacherId; return this; }
         public Builder subject(String subject) { this.subject = subject; return this; }
         public Builder grade(String grade) { this.grade = grade; return this; }
+        public Builder credits(Integer credits) { this.credits = credits; return this; }
         public Builder active(boolean active) { this.active = active; return this; }
         public Builder createdAt(LocalDateTime createdAt) { this.createdAt = createdAt; return this; }
         public Course build() {
-            return new Course(id, courseCode, courseName, description, classId, schoolId, teacherId, subject, grade, active, createdAt);
+            return new Course(id, courseCode, courseName, description, classId, schoolId, teacherId, subject, grade, credits, active, createdAt);
         }
     }
 }

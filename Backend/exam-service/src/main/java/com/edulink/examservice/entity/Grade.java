@@ -39,6 +39,10 @@ public class Grade {
     @Column(name = "remarks")
     private String remarks;
 
+    /** Spec §4.5 — Grade.Status. Values: PASS, FAIL, PENDING_REVIEW. */
+    @Column(name = "status", length = 20)
+    private String status;
+
     @Column(name = "graded_at")
     private LocalDateTime gradedAt;
 
@@ -47,6 +51,13 @@ public class Grade {
     public Grade(Long id, String courseCode, String examType, String rollNumber, String studentEmail,
                  String teacherEmail, int marksObtained, int totalMarks, int passingMarks,
                  String grade, String remarks, LocalDateTime gradedAt) {
+        this(id, courseCode, examType, rollNumber, studentEmail, teacherEmail, marksObtained, totalMarks,
+             passingMarks, grade, remarks, null, gradedAt);
+    }
+
+    public Grade(Long id, String courseCode, String examType, String rollNumber, String studentEmail,
+                 String teacherEmail, int marksObtained, int totalMarks, int passingMarks,
+                 String grade, String remarks, String status, LocalDateTime gradedAt) {
         this.id = id;
         this.courseCode = courseCode;
         this.examType = examType;
@@ -58,6 +69,7 @@ public class Grade {
         this.passingMarks = passingMarks;
         this.grade = grade;
         this.remarks = remarks;
+        this.status = status;
         this.gradedAt = gradedAt;
     }
 
@@ -94,11 +106,19 @@ public class Grade {
     public String getRemarks() { return remarks; }
     public void setRemarks(String remarks) { this.remarks = remarks; }
 
+    public String getStatus() { return status; }
+    public void setStatus(String status) { this.status = status; }
+
     public LocalDateTime getGradedAt() { return gradedAt; }
     public void setGradedAt(LocalDateTime gradedAt) { this.gradedAt = gradedAt; }
 
     @PrePersist
-    protected void onCreate() { gradedAt = LocalDateTime.now(); }
+    protected void onCreate() {
+        gradedAt = LocalDateTime.now();
+        if (status == null || status.isBlank()) {
+            status = (marksObtained >= passingMarks) ? "PASS" : "FAIL";
+        }
+    }
 
     public static Builder builder() { return new Builder(); }
 
@@ -114,6 +134,7 @@ public class Grade {
         private int passingMarks;
         private String grade;
         private String remarks;
+        private String status;
         private LocalDateTime gradedAt;
 
         public Builder id(Long id) { this.id = id; return this; }
@@ -127,11 +148,12 @@ public class Grade {
         public Builder passingMarks(int passingMarks) { this.passingMarks = passingMarks; return this; }
         public Builder grade(String grade) { this.grade = grade; return this; }
         public Builder remarks(String remarks) { this.remarks = remarks; return this; }
+        public Builder status(String status) { this.status = status; return this; }
         public Builder gradedAt(LocalDateTime gradedAt) { this.gradedAt = gradedAt; return this; }
 
         public Grade build() {
             return new Grade(id, courseCode, examType, rollNumber, studentEmail, teacherEmail,
-                    marksObtained, totalMarks, passingMarks, grade, remarks, gradedAt);
+                    marksObtained, totalMarks, passingMarks, grade, remarks, status, gradedAt);
         }
     }
 }

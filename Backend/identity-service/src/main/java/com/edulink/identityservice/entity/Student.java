@@ -30,6 +30,14 @@ public class Student {
     @Column(unique = true)
     private String rollNumber;
 
+    /** Spec §4.2 — Student.EnrollmentDate. Set on create; immutable thereafter via service layer. */
+    @Column(name = "enrollment_date")
+    private LocalDateTime enrollmentDate;
+
+    /** Spec §4.2 — Student.Status. Values: ACTIVE, GRADUATED, WITHDRAWN, SUSPENDED. */
+    @Column(name = "status", length = 20)
+    private String status = "ACTIVE";
+
     private LocalDateTime createdAt;
 
     public Student() {}
@@ -65,11 +73,17 @@ public class Student {
     public void setClassId(Long classId) { this.classId = classId; }
     public String getRollNumber() { return rollNumber; }
     public void setRollNumber(String rollNumber) { this.rollNumber = rollNumber; }
+    public LocalDateTime getEnrollmentDate() { return enrollmentDate; }
+    public void setEnrollmentDate(LocalDateTime enrollmentDate) { this.enrollmentDate = enrollmentDate; }
+    public String getStatus() { return status; }
+    public void setStatus(String status) { this.status = status; }
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
 
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
+        if (enrollmentDate == null) enrollmentDate = createdAt;
+        if (status == null || status.isBlank()) status = "ACTIVE";
     }
 }

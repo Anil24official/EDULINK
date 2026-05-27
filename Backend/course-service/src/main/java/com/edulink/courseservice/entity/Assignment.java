@@ -23,12 +23,21 @@ public class Assignment {
     private int maxMarks;
     private LocalDateTime createdAt;
     private String questionsFileId;
+    /** Spec §4.4 — Assignment.Status. Values: OPEN, CLOSED, ARCHIVED. */
+    @Column(name = "status", length = 20)
+    private String status = "OPEN";
 
     public Assignment() {
     }
 
     public Assignment(String courseCode, String teacherEmail, String title, String description,
                       Integer assignmentNum, LocalDateTime dueDate, int maxMarks, LocalDateTime createdAt, String questionsFileId) {
+        this(courseCode, teacherEmail, title, description, assignmentNum, dueDate, maxMarks, createdAt, questionsFileId, "OPEN");
+    }
+
+    public Assignment(String courseCode, String teacherEmail, String title, String description,
+                      Integer assignmentNum, LocalDateTime dueDate, int maxMarks, LocalDateTime createdAt,
+                      String questionsFileId, String status) {
         this.assignmentNum = assignmentNum;
         this.courseCode = courseCode;
         this.teacherEmail = teacherEmail;
@@ -38,6 +47,7 @@ public class Assignment {
         this.maxMarks = maxMarks;
         this.createdAt = createdAt;
         this.questionsFileId = questionsFileId;
+        this.status = status;
     }
 
     public Long getId() { return id; }
@@ -60,8 +70,13 @@ public class Assignment {
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
     public String getQuestionsFileId() { return questionsFileId; }
     public void setQuestionsFileId(String questionsFileId) { this.questionsFileId = questionsFileId; }
+    public String getStatus() { return status; }
+    public void setStatus(String status) { this.status = status; }
 
-    @PrePersist protected void onCreate() { createdAt = LocalDateTime.now(); }
+    @PrePersist protected void onCreate() {
+        createdAt = LocalDateTime.now();
+        if (status == null || status.isBlank()) status = "OPEN";
+    }
 
     public static Builder builder() { return new Builder(); }
 
@@ -75,6 +90,7 @@ public class Assignment {
         private int maxMarks;
         private LocalDateTime createdAt;
         private String questionsFileId;
+        private String status = "OPEN";
 
         public Builder assignmentNum(Integer assignmentNum) { this.assignmentNum = assignmentNum; return this; }
         public Builder courseCode(String courseCode) { this.courseCode = courseCode; return this; }
@@ -85,8 +101,9 @@ public class Assignment {
         public Builder maxMarks(int maxMarks) { this.maxMarks = maxMarks; return this; }
         public Builder createdAt(LocalDateTime createdAt) { this.createdAt = createdAt; return this; }
         public Builder questionsFileId(String questionsFileId) { this.questionsFileId = questionsFileId; return this; }
+        public Builder status(String status) { this.status = status; return this; }
         public Assignment build() {
-            return new Assignment(courseCode, teacherEmail, title, description, assignmentNum, dueDate, maxMarks, createdAt, questionsFileId);
+            return new Assignment(courseCode, teacherEmail, title, description, assignmentNum, dueDate, maxMarks, createdAt, questionsFileId, status);
         }
     }
 }

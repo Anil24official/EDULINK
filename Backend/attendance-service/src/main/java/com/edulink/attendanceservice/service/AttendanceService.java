@@ -2,6 +2,8 @@ package com.edulink.attendanceservice.service;
 
 import com.edulink.attendanceservice.entity.Attendance;
 import com.edulink.attendanceservice.repository.AttendanceRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -9,6 +11,7 @@ import java.util.stream.Collectors;
 
 @Service
 public class AttendanceService {
+    private static final Logger audit = LoggerFactory.getLogger("AUDIT");
     private final AttendanceRepository attendanceRepository;
 
     public AttendanceService(AttendanceRepository attendanceRepository) {
@@ -17,12 +20,22 @@ public class AttendanceService {
 
     /** Mark single attendance record */
     public Attendance markAttendance(Attendance attendance) {
-        return attendanceRepository.save(attendance);
+        Attendance saved = attendanceRepository.save(attendance);
+        audit.info("[AUDIT] action=ATTENDANCE_MARK actor={} roll={} course={} date={} status={}",
+                saved.getMarkedBy(), saved.getRollNumber(), saved.getCourseId(),
+                saved.getAttendanceDate(), saved.getStatus());
+        return saved;
     }
 
     /** Bulk-save attendance records for all students in a class */
     public List<Attendance> markAttendanceBulk(List<Attendance> records) {
-        return attendanceRepository.saveAll(records);
+        List<Attendance> saved = attendanceRepository.saveAll(records);
+        if (!saved.isEmpty()) {
+            audit.info("[AUDIT] action=ATTENDANCE_BULK_MARK actor={} count={} course={} date={}",
+                    saved.get(0).getMarkedBy(), saved.size(), saved.get(0).getCourseId(),
+                    saved.get(0).getAttendanceDate());
+        }
+        return saved;
     }
 
     /** Get all attendance records for a student by rollNumber */

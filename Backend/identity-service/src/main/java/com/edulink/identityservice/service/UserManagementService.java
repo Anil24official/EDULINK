@@ -28,12 +28,14 @@ public class UserManagementService {
     private final BoardOfficerRepository boardOfficerRepository;
     private final SchoolAdminRepository schoolAdminRepository;
     private final SchoolRepository schoolRepository;
+    private final AuditLogService auditLogService;
 
     public UserManagementService(UserRepository userRepository, PasswordEncoder passwordEncoder,
                                 StudentRepository studentRepository,
                                 TeacherRepository teacherRepository, ComplianceOfficerRepository complianceOfficerRepository,
                                 RegulatorRepository regulatorRepository, BoardOfficerRepository boardOfficerRepository,
-                                SchoolAdminRepository schoolAdminRepository, SchoolRepository schoolRepository) {
+                                SchoolAdminRepository schoolAdminRepository, SchoolRepository schoolRepository,
+                                AuditLogService auditLogService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
 
@@ -44,6 +46,7 @@ public class UserManagementService {
         this.boardOfficerRepository = boardOfficerRepository;
         this.schoolAdminRepository = schoolAdminRepository;
         this.schoolRepository = schoolRepository;
+        this.auditLogService = auditLogService;
     }
 
     public UserResponse createUser(CreateUserRequest request, String createdByEmail, String authorizationToken) {
@@ -93,6 +96,8 @@ public class UserManagementService {
 
         User saved = userRepository.save(user);
         log.info("User created: {} with role: {} by: {}", saved.getEmail(), saved.getRole(), createdByEmail);
+        auditLogService.recordSuccess(createdByEmail, null, "USER_CREATE",
+                "user:" + saved.getEmail(), "role=" + saved.getRole());
 
         // Save to role-specific tables
         switch (saved.getRole()) {
@@ -179,6 +184,8 @@ public class UserManagementService {
         // Delete from user table
         userRepository.delete(user);
         log.info("User deleted: {} with role: {}", user.getEmail(), user.getRole());
+        auditLogService.recordSuccess(null, null, "USER_DELETE",
+                "user:" + user.getEmail(), "role=" + user.getRole());
     }
 
     public UserResponse getUserById(String id) {

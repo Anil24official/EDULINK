@@ -1,9 +1,13 @@
 import axios from "axios";
 
 const GATEWAY_BASE = process.env.REACT_APP_GATEWAY_URL || "http://localhost:9090";
+// Spec §8 — API versioning. Gateway also accepts un-versioned paths so callers passing
+// absolute URLs from endpoints.jsx already include the prefix; this only affects
+// callers that pass relative paths to httpClient directly.
+const API_VERSION = process.env.REACT_APP_API_VERSION ?? "/v1";
 
 const httpClient = axios.create({
-  baseURL: GATEWAY_BASE,
+  baseURL: `${GATEWAY_BASE}${API_VERSION}`,
   timeout: process.env.REACT_APP_API_TIMEOUT || 20000,
   headers: { "Content-Type": "application/json" },
 });

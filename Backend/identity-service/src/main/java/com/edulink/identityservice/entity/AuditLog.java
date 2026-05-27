@@ -4,6 +4,11 @@ import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
 
+/**
+ * Spec §8 — immutable audit log. Once persisted, rows cannot be updated or deleted.
+ * Hibernate-level enforcement is provided by {@code @PreUpdate} / {@code @PreRemove}
+ * which throw. The repository (see AuditLogRepository) also forbids delete/save-after-id.
+ */
 @Entity
 @Table(name = "audit_logs", indexes = {
         @Index(name = "idx_audit_user_email", columnList = "userEmail"),
@@ -16,21 +21,28 @@ public class AuditLog {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(updatable = false)
     private String userEmail;
 
+    @Column(updatable = false)
     private String userRole;
 
+    @Column(updatable = false)
     private String action;
 
+    @Column(updatable = false)
     private String resource;
 
-    @Column(columnDefinition = "TEXT")
+    @Column(columnDefinition = "TEXT", updatable = false)
     private String details;
 
+    @Column(updatable = false)
     private String status;
 
+    @Column(updatable = false)
     private String ipAddress;
 
+    @Column(updatable = false)
     private LocalDateTime timestamp;
 
     @PrePersist
@@ -39,6 +51,16 @@ public class AuditLog {
         if (status == null || status.isBlank()) {
             status = "SUCCESS";
         }
+    }
+
+    @PreUpdate
+    protected void rejectUpdate() {
+        throw new UnsupportedOperationException("AuditLog is immutable (spec §8). Rows cannot be modified after insert.");
+    }
+
+    @PreRemove
+    protected void rejectRemove() {
+        throw new UnsupportedOperationException("AuditLog is immutable (spec §8). Rows cannot be deleted.");
     }
 
     public AuditLog() {}
@@ -55,29 +77,20 @@ public class AuditLog {
     }
 
     public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
 
     public String getUserEmail() { return userEmail; }
-    public void setUserEmail(String userEmail) { this.userEmail = userEmail; }
 
     public String getUserRole() { return userRole; }
-    public void setUserRole(String userRole) { this.userRole = userRole; }
 
     public String getAction() { return action; }
-    public void setAction(String action) { this.action = action; }
 
     public String getResource() { return resource; }
-    public void setResource(String resource) { this.resource = resource; }
 
     public String getDetails() { return details; }
-    public void setDetails(String details) { this.details = details; }
 
     public String getStatus() { return status; }
-    public void setStatus(String status) { this.status = status; }
 
     public String getIpAddress() { return ipAddress; }
-    public void setIpAddress(String ipAddress) { this.ipAddress = ipAddress; }
 
     public LocalDateTime getTimestamp() { return timestamp; }
-    public void setTimestamp(LocalDateTime timestamp) { this.timestamp = timestamp; }
 }

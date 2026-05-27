@@ -35,6 +35,14 @@ public class Notification {
     @NotBlank(message = "Type is required")
     private String type;
 
+    /** Spec §4.9 — Notification.Category. Values: ENROLLMENT, COURSE, EXAM, COMPLIANCE. */
+    @Column(name = "category", length = 32)
+    private String category;
+
+    /** Spec §4.9 — Notification.EntityID. Free-form ID of the related entity (e.g. examId, courseId). */
+    @Column(name = "entity_id", length = 128)
+    private String entityId;
+
     @Column(name = "is_read")
     private boolean readStatus;
 
@@ -105,6 +113,22 @@ public class Notification {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
+    public String getEntityId() {
+        return entityId;
+    }
+
+    public void setEntityId(String entityId) {
+        this.entityId = entityId;
     }
 
     public boolean isReadStatus() {

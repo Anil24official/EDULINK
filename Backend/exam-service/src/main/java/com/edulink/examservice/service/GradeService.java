@@ -2,6 +2,8 @@ package com.edulink.examservice.service;
 
 import com.edulink.examservice.entity.Grade;
 import com.edulink.examservice.repository.GradeRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.security.core.context.SecurityContextHolder;
 import java.util.List;
@@ -9,6 +11,7 @@ import java.util.Optional;
 
 @Service
 public class GradeService {
+    private static final Logger audit = LoggerFactory.getLogger("AUDIT");
     private final GradeRepository gradeRepository;
 
     public GradeService(GradeRepository gradeRepository) {
@@ -51,7 +54,11 @@ public class GradeService {
             grade.setPassingMarks((int) (grade.getTotalMarks() * 0.4)); // default 40%
         }
 
-        return gradeRepository.save(grade);
+        Grade saved = gradeRepository.save(grade);
+        audit.info("[AUDIT] action=GRADE_RECORD actor={} roll={} course={} examType={} marks={}/{} letter={}",
+                teacherEmail, saved.getRollNumber(), saved.getCourseCode(), saved.getExamType(),
+                saved.getMarksObtained(), saved.getTotalMarks(), saved.getGrade());
+        return saved;
     }
 
     public List<Grade> getGradesByRollNumber(String rollNumber) {
